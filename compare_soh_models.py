@@ -1034,13 +1034,39 @@ def run(args: argparse.Namespace) -> None:
         files = [fp for fp in files if not exclude_re.search(fp.name)]
     if args.max_files:
         files = files[: args.max_files]
-    if len(files) < 3:
-        raise ValueError("need at least 3 pkl files for train/val/test split")
+    if not files:
+        raise ValueError("no pkl files found")
 
-    train_files, val_files, test_files = pipe.split_files(files, seed=split_seed)
-    train = pipe.build_dataset(train_files, early_cycle=args.early_cycle, horizon=args.horizon, fixed_len=args.fixed_len)
-    val = pipe.build_dataset(val_files, early_cycle=args.early_cycle, horizon=args.horizon, fixed_len=args.fixed_len)
-    test = pipe.build_dataset(test_files, early_cycle=args.early_cycle, horizon=args.horizon, fixed_len=args.fixed_len)
+    selected_eval_domain = ""
+    sample_split_details = []
+    if args.split_mode == "battery":
+        if len(files) < 3:
+            raise ValueError("need at least 3 pkl files for train/val/test split")
+        train_files, val_files, test_files = pipe.split_files(files, seed=split_seed)
+        train = pipe.build_dataset(train_files, early_cycle=args.early_cycle, horizon=args.horizon, fixed_len=args.fixed_len)
+        val = pipe.build_dataset(val_files, early_cycle=args.early_cycle, horizon=args.horizon, fixed_len=args.fixed_len)
+        test = pipe.build_dataset(test_files, early_cycle=args.early_cycle, horizon=args.horizon, fixed_len=args.fixed_len)
+    elif args.split_mode == "same-domain-eval":
+        if len(files) < 3:
+            raise ValueError("need at least 3 pkl files for train/val/test split")
+        train_files, val_files, test_files, selected_eval_domain = pipe.split_files_same_domain_eval(
+            files,
+            seed=split_seed,
+            eval_domain=args.eval_domain or None,
+        )
+        train = pipe.build_dataset(train_files, early_cycle=args.early_cycle, horizon=args.horizon, fixed_len=args.fixed_len)
+        val = pipe.build_dataset(val_files, early_cycle=args.early_cycle, horizon=args.horizon, fixed_len=args.fixed_len)
+        test = pipe.build_dataset(test_files, early_cycle=args.early_cycle, horizon=args.horizon, fixed_len=args.fixed_len)
+    elif args.split_mode == "chronological-within-file":
+        train_files = val_files = test_files = files
+        train, val, test, sample_split_details = pipe.build_chronological_splits_within_files(
+            files,
+            early_cycle=args.early_cycle,
+            horizon=args.horizon,
+            fixed_len=args.fixed_len,
+        )
+    else:
+        raise ValueError(f"unknown split mode: {args.split_mode}")
 
     X_train, X_val, X_test, X_mean, X_std = pipe.normalize_by_train(train.X, val.X, test.X)
     train_baseline = input_end_soh(train, train_files, fixed_len=args.fixed_len)
@@ -1064,6 +1090,8 @@ def run(args: argparse.Namespace) -> None:
         "seed": args.seed,
         "model_seed": model_seed,
         "split_seed": split_seed,
+        "split_mode": args.split_mode,
+        "eval_domain": selected_eval_domain,
         "early_cycle": args.early_cycle,
         "horizon": args.horizon,
         "fixed_len": args.fixed_len,
@@ -1071,6 +1099,11 @@ def run(args: argparse.Namespace) -> None:
         "train_files": [p.name for p in train_files],
         "val_files": [p.name for p in val_files],
         "test_files": [p.name for p in test_files],
+        "file_domains": {p.name: pipe.infer_battery_domain(p) for p in files},
+        "train_domains": sorted({pipe.infer_battery_domain(p) for p in train_files}),
+        "val_domains": sorted({pipe.infer_battery_domain(p) for p in val_files}),
+        "test_domains": sorted({pipe.infer_battery_domain(p) for p in test_files}),
+        "sample_split_details": sample_split_details,
         "train_shape": list(X_train.shape),
         "val_shape": list(X_val.shape),
         "test_shape": list(X_test.shape),
@@ -1318,6 +1351,24 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=-1,
         help="Battery-level split seed. -1 reuses --seed for backward-compatible behavior.",
+    )
+    parser.add_argument(
+        "--split-mode",
+        choices=["battery", "same-domain-eval", "chronological-within-file"],
+        default="battery",
+        help=(
+            "battery keeps the original file-level random split. "
+            "same-domain-eval holds out one inferred domain and splits that same domain into validation/test. "
+            "chronological-within-file splits sliding-window samples inside each pkl by target-cycle order."
+        ),
+    )
+    parser.add_argument(
+        "--eval-domain",
+        default="",
+        help=(
+            "Domain label to hold out when --split-mode same-domain-eval is used. "
+            "Leave blank to select an eligible domain from the split seed."
+        ),
     )
     parser.add_argument("--max-files", type=int, default=0)
     parser.add_argument("--models", default="all")

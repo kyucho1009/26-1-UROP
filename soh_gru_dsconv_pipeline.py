@@ -243,6 +243,111 @@ def build_dataset(
     )
 
 
+def subset_split_data(split: SplitData, indices: Sequence[int], split_name: str) -> SplitData:
+    idx = np.asarray(indices, dtype=np.int64)
+    meta = []
+    for i in idx:
+        item = dict(split.meta[int(i)])
+        item["sample_split"] = split_name
+        meta.append(item)
+    return SplitData(
+        X=split.X[idx].astype(np.float32),
+        y=split.y[idx].astype(np.float32),
+        meta=meta,
+    )
+
+
+def concatenate_split_data(parts: Sequence[SplitData]) -> SplitData:
+    if not parts:
+        raise ValueError("no split data parts to concatenate")
+    return SplitData(
+        X=np.concatenate([part.X for part in parts], axis=0).astype(np.float32),
+        y=np.concatenate([part.y for part in parts], axis=0).astype(np.float32),
+        meta=[item for part in parts for item in part.meta],
+    )
+
+
+def chronological_sample_counts(n: int, val_ratio: float = 0.15, test_ratio: float = 0.15) -> tuple[int, int, int]:
+    if n < 3:
+        raise ValueError("need at least 3 samples for train/val/test split")
+    n_test = max(1, int(round(n * test_ratio)))
+    n_val = max(1, int(round(n * val_ratio)))
+    n_train = n - n_val - n_test
+    if n_train < 1:
+        n_train, n_val, n_test = 1, 1, n - 2
+    return n_train, n_val, n_test
+
+
+def build_chronological_splits_within_files(
+    files: Iterable[str | Path],
+    early_cycle: int = EARLY_CYCLE,
+    horizon: int = HORIZON,
+    fixed_len: int = FIXED_LEN,
+    val_ratio: float = 0.15,
+    test_ratio: float = 0.15,
+) -> tuple[SplitData, SplitData, SplitData, list[dict]]:
+    """Build train/val/test splits inside every pkl file in cycle order."""
+    train_parts, val_parts, test_parts = [], [], []
+    split_details = []
+
+    for fp in files:
+        try:
+            one = build_dataset([fp], early_cycle=early_cycle, horizon=horizon, fixed_len=fixed_len)
+        except Exception as exc:
+            print(f"[skip split] {fp}: {exc}")
+            continue
+
+        n = len(one.y)
+        if n < 3:
+            print(f"[skip split] {fp}: only {n} samples")
+            continue
+
+        order = sorted(
+            range(n),
+            key=lambda i: (
+                int(one.meta[i].get("target_cycle", 0)),
+                int(one.meta[i].get("input_end_cycle", 0)),
+            ),
+        )
+        n_train, n_val, n_test = chronological_sample_counts(n, val_ratio=val_ratio, test_ratio=test_ratio)
+        train_idx = order[:n_train]
+        val_idx = order[n_train : n_train + n_val]
+        test_idx = order[n_train + n_val :]
+
+        train_part = subset_split_data(one, train_idx, "train")
+        val_part = subset_split_data(one, val_idx, "val")
+        test_part = subset_split_data(one, test_idx, "test")
+        train_parts.append(train_part)
+        val_parts.append(val_part)
+        test_parts.append(test_part)
+
+        def target_range(part: SplitData) -> list[int | None]:
+            values = [int(item.get("target_cycle", 0)) for item in part.meta]
+            return [min(values), max(values)] if values else [None, None]
+
+        fp_path = Path(fp)
+        split_details.append(
+            {
+                "file": fp_path.name,
+                "domain": infer_battery_domain(fp_path),
+                "n_samples": n,
+                "train_samples": len(train_idx),
+                "val_samples": len(val_idx),
+                "test_samples": len(test_idx),
+                "train_target_cycle_range": target_range(train_part),
+                "val_target_cycle_range": target_range(val_part),
+                "test_target_cycle_range": target_range(test_part),
+            }
+        )
+
+    return (
+        concatenate_split_data(train_parts),
+        concatenate_split_data(val_parts),
+        concatenate_split_data(test_parts),
+        split_details,
+    )
+
+
 def split_files(
     files: Sequence[str | Path],
     val_ratio: float = 0.15,
@@ -268,6 +373,78 @@ def split_files(
     val = paths[n_train : n_train + n_val]
     test = paths[n_train + n_val :]
     return train, val, test
+
+
+def infer_battery_domain(path: str | Path) -> str:
+    """Infer a coarse dataset/domain label from a raw sample filename."""
+    stem = Path(path).stem
+    prefix = stem.split("_", 1)[0]
+    if prefix.startswith("Tongji"):
+        return "Tongji"
+    return prefix
+
+
+def group_files_by_domain(files: Sequence[str | Path]) -> dict[str, list[Path]]:
+    groups: dict[str, list[Path]] = {}
+    for path in files:
+        fp = Path(path)
+        groups.setdefault(infer_battery_domain(fp), []).append(fp)
+    return groups
+
+
+def split_files_same_domain_eval(
+    files: Sequence[str | Path],
+    seed: int = DEFAULT_SEED,
+    eval_domain: str | None = None,
+) -> tuple[list[Path], list[Path], list[Path], str]:
+    """Hold out one domain, then split that same domain into val/test files."""
+    paths = [Path(p) for p in files]
+    if len(paths) < 3:
+        raise ValueError("need at least 3 battery files for train/val/test split")
+
+    groups = group_files_by_domain(paths)
+    eligible_domains = sorted(domain for domain, items in groups.items() if len(items) >= 2)
+    if not eligible_domains:
+        counts = ", ".join(f"{domain}={len(items)}" for domain, items in sorted(groups.items()))
+        raise ValueError(
+            "same-domain eval split needs at least one inferred domain with 2+ pkl files. "
+            f"Available domain counts: {counts}"
+        )
+
+    if eval_domain:
+        domain_by_lower = {domain.lower(): domain for domain in groups}
+        selected_domain = domain_by_lower.get(eval_domain.lower())
+        if selected_domain is None:
+            raise ValueError(
+                f"unknown eval domain: {eval_domain}. "
+                f"Available domains: {', '.join(sorted(groups))}"
+            )
+        if len(groups[selected_domain]) < 2:
+            raise ValueError(
+                f"eval domain {selected_domain!r} has only {len(groups[selected_domain])} file(s); "
+                "need at least 2 for validation/test."
+            )
+    else:
+        max_count = max(len(groups[domain]) for domain in eligible_domains)
+        largest_domains = [domain for domain in eligible_domains if len(groups[domain]) == max_count]
+        rng = random.Random(seed)
+        rng.shuffle(largest_domains)
+        selected_domain = largest_domains[0]
+
+    rng = random.Random(seed)
+    eval_files = list(groups[selected_domain])
+    rng.shuffle(eval_files)
+    n_val = max(1, len(eval_files) // 2)
+    val = eval_files[:n_val]
+    test = eval_files[n_val:]
+    if not test:
+        raise ValueError(f"eval domain {selected_domain!r} did not leave any test files")
+
+    train = [fp for domain, items in groups.items() if domain != selected_domain for fp in items]
+    if not train:
+        raise ValueError(f"eval domain {selected_domain!r} consumes all files; no train files remain")
+    rng.shuffle(train)
+    return train, val, test, selected_domain
 
 
 def normalize_by_train(
