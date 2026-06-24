@@ -1065,6 +1065,17 @@ def run(args: argparse.Namespace) -> None:
             horizon=args.horizon,
             fixed_len=args.fixed_len,
         )
+    elif args.split_mode == "condition-gap-within-file":
+        train, val, test, sample_split_details = pipe.build_condition_gap_splits_within_files(
+            files,
+            early_cycle=args.early_cycle,
+            horizon=args.horizon,
+            fixed_len=args.fixed_len,
+            gap_samples=args.split_gap,
+        )
+        used_file_names = {item["file"] for item in sample_split_details if item.get("status") == "used"}
+        used_files = [fp for fp in files if fp.name in used_file_names]
+        train_files = val_files = test_files = used_files
     else:
         raise ValueError(f"unknown split mode: {args.split_mode}")
 
@@ -1092,6 +1103,7 @@ def run(args: argparse.Namespace) -> None:
         "split_seed": split_seed,
         "split_mode": args.split_mode,
         "eval_domain": selected_eval_domain,
+        "split_gap": args.split_gap,
         "early_cycle": args.early_cycle,
         "horizon": args.horizon,
         "fixed_len": args.fixed_len,
@@ -1100,9 +1112,13 @@ def run(args: argparse.Namespace) -> None:
         "val_files": [p.name for p in val_files],
         "test_files": [p.name for p in test_files],
         "file_domains": {p.name: pipe.infer_battery_domain(p) for p in files},
+        "file_experiment_conditions": {p.name: pipe.infer_experiment_condition(p) for p in files},
         "train_domains": sorted({pipe.infer_battery_domain(p) for p in train_files}),
         "val_domains": sorted({pipe.infer_battery_domain(p) for p in val_files}),
         "test_domains": sorted({pipe.infer_battery_domain(p) for p in test_files}),
+        "train_experiment_conditions": sorted({pipe.infer_experiment_condition(p) for p in train_files}),
+        "val_experiment_conditions": sorted({pipe.infer_experiment_condition(p) for p in val_files}),
+        "test_experiment_conditions": sorted({pipe.infer_experiment_condition(p) for p in test_files}),
         "sample_split_details": sample_split_details,
         "train_shape": list(X_train.shape),
         "val_shape": list(X_val.shape),
@@ -1354,12 +1370,22 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--split-mode",
-        choices=["battery", "same-domain-eval", "chronological-within-file"],
+        choices=["battery", "same-domain-eval", "chronological-within-file", "condition-gap-within-file"],
         default="battery",
         help=(
             "battery keeps the original file-level random split. "
             "same-domain-eval holds out one inferred domain and splits that same domain into validation/test. "
-            "chronological-within-file splits sliding-window samples inside each pkl by target-cycle order."
+            "chronological-within-file splits sliding-window samples inside each pkl by target-cycle order. "
+            "condition-gap-within-file does the same with experiment-condition labels and unused gap windows."
+        ),
+    )
+    parser.add_argument(
+        "--split-gap",
+        type=int,
+        default=5,
+        help=(
+            "Number of sliding-window samples to leave unused between train/val and val/test "
+            "when --split-mode condition-gap-within-file is used."
         ),
     )
     parser.add_argument(

@@ -19,6 +19,7 @@ import math
 import os
 import pickle
 import random
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Sequence
@@ -278,6 +279,23 @@ def chronological_sample_counts(n: int, val_ratio: float = 0.15, test_ratio: flo
     return n_train, n_val, n_test
 
 
+def chronological_gap_sample_counts(
+    n: int,
+    gap_samples: int = 5,
+    val_ratio: float = 0.15,
+    test_ratio: float = 0.15,
+) -> tuple[int, int, int]:
+    """Compute split sizes after reserving train/val and val/test gaps."""
+    if gap_samples < 0:
+        raise ValueError("gap_samples must be non-negative")
+    usable = n - (2 * gap_samples)
+    if usable < 3:
+        raise ValueError(
+            f"need at least {3 + 2 * gap_samples} samples for train/gap/val/gap/test split; got {n}"
+        )
+    return chronological_sample_counts(usable, val_ratio=val_ratio, test_ratio=test_ratio)
+
+
 def build_chronological_splits_within_files(
     files: Iterable[str | Path],
     early_cycle: int = EARLY_CYCLE,
@@ -338,6 +356,174 @@ def build_chronological_splits_within_files(
                 "val_target_cycle_range": target_range(val_part),
                 "test_target_cycle_range": target_range(test_part),
             }
+        )
+
+    return (
+        concatenate_split_data(train_parts),
+        concatenate_split_data(val_parts),
+        concatenate_split_data(test_parts),
+        split_details,
+    )
+
+
+def infer_experiment_condition(path: str | Path) -> str:
+    """Infer a condition-level label from a raw sample filename.
+
+    This keeps the dataset/protocol information and strips likely cell or
+    replicate identifiers such as trailing letters, battery numbers, or cell IDs.
+    The label is intentionally conservative and is saved in split_info.json for QA.
+    """
+    stem = Path(path).stem
+    rules = [
+        (r"^(CALB_.+)-\d+$", r"\1"),
+        (r"^(CALCE_[A-Za-z0-9-]+)_\d+$", r"\1"),
+        (r"^(HNEI_.+)_[a-z]$", r"\1"),
+        (r"^(MICH_.+)_[a-z]$", r"\1"),
+        (r"^(SNL_.+)_[a-z]$", r"\1"),
+        (r"^(UL-PUR_.+)_[a-z]$", r"\1"),
+        (r"^(HUST)_\d+-\d+$", r"\1"),
+        (r"^(ISU-ILCC)_[A-Za-z0-9-]+$", r"\1"),
+        (r"^(MATR)_b\d+c\d+$", r"\1"),
+        (r"^(NA-ion_.+)_\d+_\d+$", r"\1"),
+        (r"^(RWTH)_\d+$", r"\1"),
+        (r"^(SDU_Battery)_\d+$", r"\1"),
+        (r"^(Stanford_Nova_Regular(?:_Ref)?)_\d+$", r"\1"),
+        (r"^(Tongji\d+_[^_]+)_.+$", r"\1"),
+        (r"^(XJTU_[^_]+)_battery-\d+$", r"\1"),
+        (r"^(ZN-coin_.+)_\d+_Batch-\d+$", r"\1"),
+    ]
+    for pattern, repl in rules:
+        if re.match(pattern, stem):
+            return re.sub(pattern, repl, stem)
+
+    parts = stem.split("_")
+    if len(parts) > 1 and re.fullmatch(r"[a-z]|\d{1,4}|battery-\d+", parts[-1]):
+        return "_".join(parts[:-1])
+    return stem
+
+
+def group_files_by_experiment_condition(files: Sequence[str | Path]) -> dict[str, list[Path]]:
+    groups: dict[str, list[Path]] = {}
+    for path in files:
+        fp = Path(path)
+        groups.setdefault(infer_experiment_condition(fp), []).append(fp)
+    return groups
+
+
+def build_condition_gap_splits_within_files(
+    files: Iterable[str | Path],
+    early_cycle: int = EARLY_CYCLE,
+    horizon: int = HORIZON,
+    fixed_len: int = FIXED_LEN,
+    val_ratio: float = 0.15,
+    test_ratio: float = 0.15,
+    gap_samples: int = 5,
+) -> tuple[SplitData, SplitData, SplitData, list[dict]]:
+    """Build condition-aware chronological splits with unused gap windows.
+
+    Each preprocessed pkl file is first tagged with a coarse dataset label and a
+    finer experiment-condition label. Samples are then split inside that file in
+    target-cycle order as train | gap | val | gap | test. Groups/files that do
+    not have enough samples are reported in split_details and excluded.
+    """
+    paths = [Path(p) for p in files]
+    train_parts, val_parts, test_parts = [], [], []
+    split_details = []
+
+    def target_range_from_meta(items: Sequence[dict]) -> list[int | None]:
+        values = [int(item.get("target_cycle", 0)) for item in items]
+        return [min(values), max(values)] if values else [None, None]
+
+    for fp in paths:
+        domain = infer_battery_domain(fp)
+        condition = infer_experiment_condition(fp)
+        detail = {
+            "file": fp.name,
+            "battery_domain": domain,
+            "experiment_condition": condition,
+            "split_gap_samples": gap_samples,
+            "required_min_samples": 3 + 2 * gap_samples,
+        }
+        try:
+            one = build_dataset([fp], early_cycle=early_cycle, horizon=horizon, fixed_len=fixed_len)
+        except Exception as exc:
+            detail.update({"status": "skipped", "reason": str(exc), "total_samples": 0})
+            split_details.append(detail)
+            print(f"[skip condition-gap split] {fp}: {exc}")
+            continue
+
+        n = len(one.y)
+        detail["total_samples"] = n
+        try:
+            n_train, n_val, n_test = chronological_gap_sample_counts(
+                n,
+                gap_samples=gap_samples,
+                val_ratio=val_ratio,
+                test_ratio=test_ratio,
+            )
+        except Exception as exc:
+            detail.update({"status": "skipped", "reason": str(exc)})
+            split_details.append(detail)
+            print(f"[skip condition-gap split] {fp}: {exc}")
+            continue
+
+        order = sorted(
+            range(n),
+            key=lambda i: (
+                int(one.meta[i].get("target_cycle", 0)),
+                int(one.meta[i].get("input_end_cycle", 0)),
+            ),
+        )
+        train_end = n_train
+        val_start = train_end + gap_samples
+        val_end = val_start + n_val
+        test_start = val_end + gap_samples
+
+        train_idx = order[:train_end]
+        train_val_gap_idx = order[train_end:val_start]
+        val_idx = order[val_start:val_end]
+        val_test_gap_idx = order[val_end:test_start]
+        test_idx = order[test_start:]
+
+        train_part = subset_split_data(one, train_idx, "train")
+        val_part = subset_split_data(one, val_idx, "val")
+        test_part = subset_split_data(one, test_idx, "test")
+        for part in (train_part, val_part, test_part):
+            for item in part.meta:
+                item["battery_domain"] = domain
+                item["experiment_condition"] = condition
+                item["split_gap_samples"] = gap_samples
+
+        train_parts.append(train_part)
+        val_parts.append(val_part)
+        test_parts.append(test_part)
+
+        def target_range(indices: Sequence[int]) -> list[int | None]:
+            return target_range_from_meta([one.meta[int(i)] for i in indices])
+
+        detail.update(
+            {
+                "status": "used",
+                "train_samples": len(train_idx),
+                "train_val_gap_samples": len(train_val_gap_idx),
+                "val_samples": len(val_idx),
+                "val_test_gap_samples": len(val_test_gap_idx),
+                "test_samples": len(test_idx),
+                "train_target_cycle_range": target_range(train_idx),
+                "train_val_gap_target_cycle_range": target_range(train_val_gap_idx),
+                "val_target_cycle_range": target_range(val_idx),
+                "val_test_gap_target_cycle_range": target_range(val_test_gap_idx),
+                "test_target_cycle_range": target_range(test_idx),
+            }
+        )
+        split_details.append(detail)
+
+    if not train_parts or not val_parts or not test_parts:
+        skipped = [item for item in split_details if item.get("status") == "skipped"]
+        reasons = "; ".join(f"{item['file']}: {item.get('reason', 'unknown')}" for item in skipped[:5])
+        raise ValueError(
+            "condition-gap split produced no usable train/val/test samples. "
+            f"First skipped reasons: {reasons}"
         )
 
     return (
