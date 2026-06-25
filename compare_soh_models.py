@@ -1082,10 +1082,10 @@ def run(args: argparse.Namespace) -> None:
     X_train, X_val, X_test, X_mean, X_std = pipe.normalize_by_train(train.X, val.X, test.X)
     train_baseline = input_end_soh(train, train_files, fixed_len=args.fixed_len)
     val_baseline = input_end_soh(val, val_files, fixed_len=args.fixed_len)
-    test_baseline = input_end_soh(test, test_files, fixed_len=args.fixed_len)
+    test_baseline = None if args.skip_test_eval else input_end_soh(test, test_files, fixed_len=args.fixed_len)
     y_train_model = make_training_targets(train, train_baseline, args.target_mode, args.target_scale)
     y_val_model = make_training_targets(val, val_baseline, args.target_mode, args.target_scale)
-    y_test_model = make_training_targets(test, test_baseline, args.target_mode, args.target_scale)
+    y_test_model = None if args.skip_test_eval else make_training_targets(test, test_baseline, args.target_mode, args.target_scale)
 
     out_dir = Path(args.output_dir)
     pred_dir = out_dir / "predictions"
@@ -1130,10 +1130,11 @@ def run(args: argparse.Namespace) -> None:
         "normalization_std": X_std.reshape(-1).astype(float).tolist(),
         "train_baseline_soh_mean": float(np.nanmean(train_baseline)),
         "val_baseline_soh_mean": float(np.nanmean(val_baseline)),
-        "test_baseline_soh_mean": float(np.nanmean(test_baseline)),
+        "test_baseline_soh_mean": None if args.skip_test_eval else float(np.nanmean(test_baseline)),
         "train_target_mean": float(np.nanmean(y_train_model)),
         "val_target_mean": float(np.nanmean(y_val_model)),
-        "test_target_mean": float(np.nanmean(y_test_model)),
+        "test_target_mean": None if args.skip_test_eval else float(np.nanmean(y_test_model)),
+        "skip_test_eval": args.skip_test_eval,
         "residual_base_epochs": args.residual_base_epochs,
         "residual_finetune_base": args.residual_finetune_base,
         "residual_scale": args.residual_scale,
@@ -1153,7 +1154,7 @@ def run(args: argparse.Namespace) -> None:
     }
     (out_dir / "split_info.json").write_text(json.dumps(split_info, indent=2), encoding="utf-8")
 
-    test_loader = pipe.make_loader(X_test, y_test_model, batch_size=args.batch_size, shuffle=False)
+    test_loader = None if args.skip_test_eval else pipe.make_loader(X_test, y_test_model, batch_size=args.batch_size, shuffle=False)
     train_loader = pipe.make_loader(X_train, y_train_model, batch_size=args.batch_size, shuffle=True)
     val_loader = pipe.make_loader(X_val, y_val_model, batch_size=args.batch_size, shuffle=False)
 
@@ -1166,16 +1167,17 @@ def run(args: argparse.Namespace) -> None:
         val_result_df["baseline_soh"] = val_baseline
         val_result_df.to_csv(val_pred_dir / "persistence_val_predictions.csv", index=False)
 
-        pred = persistence_predict(test, test_files, fixed_len=args.fixed_len)
-        result_df = pipe.make_result_df(test.meta, test.y, pred)
-        result_df["baseline_soh"] = test_baseline
         row = {
             "model": "persistence",
             **prefix_metrics(compute_metrics(val.y, val_pred, val_result_df), "val"),
-            **compute_metrics(test.y, pred, result_df),
         }
+        if not args.skip_test_eval:
+            pred = persistence_predict(test, test_files, fixed_len=args.fixed_len)
+            result_df = pipe.make_result_df(test.meta, test.y, pred)
+            result_df["baseline_soh"] = test_baseline
+            row.update(compute_metrics(test.y, pred, result_df))
+            result_df.to_csv(pred_dir / "persistence_test_predictions.csv", index=False)
         metrics_rows.append(row)
-        result_df.to_csv(pred_dir / "persistence_test_predictions.csv", index=False)
         write_metrics(metrics_rows, out_dir)
         print(pd.Series(row).to_string())
 
@@ -1268,19 +1270,20 @@ def run(args: argparse.Namespace) -> None:
             val_result_df["actual_delta_soh"] = val_raw_true / args.target_scale
             val_result_df["pred_delta_soh"] = val_raw_pred / args.target_scale
 
-        raw_pred, raw_true = pipe.predict_loader(model, test_loader, device=device)
-        pred = restore_soh_prediction(raw_pred, test_baseline, args.target_mode, args.target_scale)
-        true = test.y
-        result_df = pipe.make_result_df(test.meta, true, pred)
-        result_df["baseline_soh"] = test_baseline
-        result_df["model_output"] = raw_pred
-        result_df["model_target"] = raw_true
-        if args.target_mode == "delta":
-            result_df["actual_delta_soh"] = raw_true / args.target_scale
-            result_df["pred_delta_soh"] = raw_pred / args.target_scale
         val_metrics = prefix_metrics(compute_metrics(val.y, val_pred, val_result_df), "val")
-        test_metrics = compute_metrics(true, pred, result_df)
-        row = {"model": model_name, **val_metrics, **test_metrics}
+        row = {"model": model_name, **val_metrics}
+        if not args.skip_test_eval:
+            raw_pred, raw_true = pipe.predict_loader(model, test_loader, device=device)
+            pred = restore_soh_prediction(raw_pred, test_baseline, args.target_mode, args.target_scale)
+            true = test.y
+            result_df = pipe.make_result_df(test.meta, true, pred)
+            result_df["baseline_soh"] = test_baseline
+            result_df["model_output"] = raw_pred
+            result_df["model_target"] = raw_true
+            if args.target_mode == "delta":
+                result_df["actual_delta_soh"] = raw_true / args.target_scale
+                result_df["pred_delta_soh"] = raw_pred / args.target_scale
+            row.update(compute_metrics(true, pred, result_df))
         checkpoint_path = checkpoint_dir / f"{model_name}.pt"
         row["checkpoint_path"] = str(checkpoint_path)
         torch.save(
@@ -1306,7 +1309,8 @@ def run(args: argparse.Namespace) -> None:
             history = pd.concat([base_history, history], ignore_index=True)
         history.to_csv(history_dir / f"{model_name}_train_history.csv", index=False)
         val_result_df.to_csv(val_pred_dir / f"{model_name}_val_predictions.csv", index=False)
-        result_df.to_csv(pred_dir / f"{model_name}_test_predictions.csv", index=False)
+        if not args.skip_test_eval:
+            result_df.to_csv(pred_dir / f"{model_name}_test_predictions.csv", index=False)
         write_metrics(metrics_rows, out_dir)
         print(pd.Series(row).to_string())
 
@@ -1370,7 +1374,12 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--split-mode",
-        choices=["battery", "same-domain-eval", "chronological-within-file", "condition-gap-within-file"],
+        choices=[
+            "battery",
+            "same-domain-eval",
+            "chronological-within-file",
+            "condition-gap-within-file",
+        ],
         default="battery",
         help=(
             "battery keeps the original file-level random split. "
@@ -1406,6 +1415,11 @@ def parse_args() -> argparse.Namespace:
         type=float,
         default=1.0,
         help="Multiply training targets by this value and divide model outputs by it during SOH restoration.",
+    )
+    parser.add_argument(
+        "--skip-test-eval",
+        action="store_true",
+        help="Do not compute or save test metrics/predictions. Use this during hyperparameter tuning.",
     )
     parser.add_argument("--include-regex", default="")
     parser.add_argument("--exclude-regex", default="")
