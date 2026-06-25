@@ -1,0 +1,19 @@
+{
+  "configs": [
+    {"model": "cpmlp_cpdsconv_fusion", "name": "h030_lr1e3", "huber_delta": 0.03, "lr": 0.001},
+    {"model": "cpmlp_cpdsconv_fusion", "name": "h030_lr7e4", "huber_delta": 0.03, "lr": 0.0007},
+    {"model": "cpmlp_cpdsconv_fusion", "name": "h030_lr5e4", "huber_delta": 0.03, "lr": 0.0005},
+    {"model": "cpmlp_cpdsconv_fusion", "name": "h040_lr1e3", "huber_delta": 0.04, "lr": 0.001},
+    {"model": "cpmlp_cpdsconv_fusion", "name": "h040_lr7e4", "huber_delta": 0.04, "lr": 0.0007},
+    {"model": "cpmlp_cpdsconv_fusion", "name": "h040_lr5e4", "huber_delta": 0.04, "lr": 0.0005},
+    {"model": "cpmlp_cpdsconv_fusion", "name": "h050_lr1e3", "huber_delta": 0.05, "lr": 0.001},
+    {"model": "cpmlp_cpdsconv_fusion", "name": "h050_lr7e4", "huber_delta": 0.05, "lr": 0.0007},
+    {"model": "cpmlp_cpdsconv_fusion", "name": "h050_lr5e4", "huber_delta": 0.05, "lr": 0.0005},
+    {"model": "cpmlp_cpdsconv_fusion", "name": "h060_lr1e3", "huber_delta": 0.06, "lr": 0.001},
+    {"model": "cpmlp_cpdsconv_fusion", "name": "h060_lr7e4", "huber_delta": 0.06, "lr": 0.0007},
+    {"model": "cpmlp_cpdsconv_fusion", "name": "h060_lr5e4", "huber_delta": 0.06, "lr": 0.0005},
+    {"model": "cpmlp_cpdsconv_fusion", "name": "h080_lr1e3", "huber_delta": 0.08, "lr": 0.001},
+    {"model": "cpmlp_cpdsconv_fusion", "name": "h080_lr7e4", "huber_delta": 0.08, "lr": 0.0007},
+    {"model": "cpmlp_cpdsconv_fusion", "name": "h080_lr5e4", "huber_delta": 0.08, "lr": 0.0005}
+  ]
+}

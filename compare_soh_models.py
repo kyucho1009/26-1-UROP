@@ -1374,12 +1374,16 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--split-mode",
+<<<<<<< Updated upstream
         choices=[
             "battery",
             "same-domain-eval",
             "chronological-within-file",
             "condition-gap-within-file",
         ],
+=======
+        choices=["battery", "same-domain-eval", "chronological-within-file", "condition-gap-within-file"],
+>>>>>>> Stashed changes
         default="battery",
         help=(
             "battery keeps the original file-level random split. "
