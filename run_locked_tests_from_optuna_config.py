@@ -260,8 +260,30 @@ def write_report(output_root: Path, summary: pd.DataFrame) -> None:
         "",
     ]
     if preview_cols:
-        lines.extend(["## Summary", "", summary[preview_cols].to_markdown(index=False), ""])
+        lines.extend(["## Summary", "", dataframe_to_markdown(summary[preview_cols]), ""])
     (output_root / "locked_test_summary.md").write_text("\n".join(lines), encoding="utf-8")
+
+
+def dataframe_to_markdown(frame: Any) -> str:
+    columns = [str(column) for column in frame.columns]
+    rows = []
+    for _, row in frame.iterrows():
+        rows.append([format_markdown_cell(row[column]) for column in frame.columns])
+    header = "| " + " | ".join(columns) + " |"
+    divider = "| " + " | ".join("---" for _ in columns) + " |"
+    body = ["| " + " | ".join(row) + " |" for row in rows]
+    return "\n".join([header, divider, *body])
+
+
+def format_markdown_cell(value: Any) -> str:
+    pandas = require_pandas()
+    if value is None or pandas.isna(value):
+        return ""
+    if isinstance(value, float):
+        text = f"{value:.6g}"
+    else:
+        text = str(value)
+    return text.replace("|", "\\|").replace("\n", " ")
 
 
 def run(args: argparse.Namespace) -> None:
