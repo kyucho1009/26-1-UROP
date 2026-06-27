@@ -654,7 +654,8 @@ def write_final_outputs(args: argparse.Namespace, final_configs: dict[int, dict[
     rows = []
     for horizon, frame in sorted(confirm_frames.items()):
         frame = frame.copy()
-        frame.insert(0, "horizon", horizon)
+        frame["horizon"] = horizon
+        frame = frame[["horizon"] + [column for column in frame.columns if column != "horizon"]]
         frame.to_csv(args.output_root / f"confirm_multiseed_h{horizon}.csv", index=False)
         rows.append(frame)
     if rows:
