@@ -362,7 +362,7 @@ def run(args: argparse.Namespace) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", default="optuna_cpmlp_cpdsconv_tuning_gap20/final_optuna_configs_by_horizon.json")
+    parser.add_argument("--config", default="final_tuned_cpmlp_cpdsconv_configs_by_horizon.json")
     parser.add_argument("--script", default=Path(__file__).with_name("compare_soh_models.py"))
     parser.add_argument("--data-dir", default="raw_samples")
     parser.add_argument("--output-root", default="locked_test_cpmlp_cpdsconv_gap20")
