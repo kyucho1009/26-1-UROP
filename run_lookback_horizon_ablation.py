@@ -46,52 +46,7 @@ DEFAULT_SCENARIOS = [
 ]
 
 
-DEFAULT_MODEL_CONFIGS: dict[str, dict[str, Any]] = {
-    "cpmlp": {
-        "lr": 5e-4,
-        "weight_decay": 1e-4,
-        "dropout": 0.1,
-        "mlp_embed_dim": 64,
-        "model_hidden": 256,
-        "huber_delta": 0.1,
-        "clip_grad_norm": 1.0,
-        "lr_scheduler_patience": 0,
-        "lr_scheduler_factor": 0.5,
-        "target_scale": 10.0,
-        "zero_output_init": True,
-    },
-    "cpmlp_cpgru_fusion": {
-        "lr": 5e-4,
-        "weight_decay": 1e-4,
-        "dropout": 0.1,
-        "mlp_embed_dim": 64,
-        "gru_embed_dim": 64,
-        "model_hidden": 256,
-        "gru_hidden": 64,
-        "dsconv_channels": 64,
-        "huber_delta": 0.1,
-        "clip_grad_norm": 1.0,
-        "lr_scheduler_patience": 0,
-        "lr_scheduler_factor": 0.5,
-        "target_scale": 10.0,
-        "zero_output_init": True,
-    },
-    "cpmlp_dsconv_fusion": {
-        "lr": 5e-4,
-        "weight_decay": 1e-4,
-        "dropout": 0.15,
-        "mlp_embed_dim": 64,
-        "model_hidden": 192,
-        "gru_hidden": 48,
-        "dsconv_channels": 32,
-        "huber_delta": 0.1,
-        "clip_grad_norm": 0.5,
-        "lr_scheduler_patience": 0,
-        "lr_scheduler_factor": 0.5,
-        "target_scale": 10.0,
-        "zero_output_init": True,
-    },
-}
+DEFAULT_MODEL_CONFIGS: dict[str, dict[str, Any]] = {}
 
 
 ARG_NAMES = {
@@ -447,6 +402,21 @@ def summarize(trials: pd.DataFrame, output_root: Path) -> None:
         [column for column in ["scenario_name", "val_RMSE_mean", "val_MAE_mean"] if column in grouped.columns]
     ).groupby("scenario_name", as_index=False, group_keys=False).head(1)
     best_by_scenario.to_csv(output_root / "lookback_horizon_best_model_by_scenario.csv", index=False)
+
+    horizon_sort_cols = [
+        column
+        for column in ["horizon", "val_RMSE_mean", "val_MAE_mean", "RMSE_mean", "MAE_mean"]
+        if column in grouped.columns
+    ]
+    if "horizon" in grouped.columns and "val_RMSE_mean" in grouped.columns:
+        selection_by_horizon = grouped.sort_values(horizon_sort_cols, ascending=True).copy()
+        selection_by_horizon["selection_rank_within_horizon"] = (
+            selection_by_horizon.groupby("horizon", dropna=False).cumcount() + 1
+        )
+        selection_by_horizon["selection_basis"] = "val_RMSE_mean, then val_MAE_mean; test metrics are report-only"
+        selection_by_horizon.to_csv(output_root / "lookback_horizon_selection_by_horizon.csv", index=False)
+        best_by_horizon = selection_by_horizon.groupby("horizon", as_index=False, group_keys=False).head(1)
+        best_by_horizon.to_csv(output_root / "lookback_horizon_best_model_by_horizon.csv", index=False)
     write_report(output_root, grouped, scenario_overview)
 
 
@@ -457,6 +427,8 @@ def write_report(output_root: Path, grouped: pd.DataFrame, scenario_overview: pd
         "This run compares problem definitions, not just model hyperparameters.",
         "`lookback_cycles` is passed to the existing code as `--early-cycle`.",
         "`horizon` is the number of cycles after the last input cycle to predict.",
+        "By default, no model-specific tuned hyperparameter config is applied; pass `--model-config-file` only for an explicit tuned comparison.",
+        "Model selection/ranking should use validation metrics first. Test metrics are report-only after choices are fixed.",
         "",
         "Use the tables below to judge whether a scenario is meaningful, stable, and non-trivial relative to persistence.",
         "",
@@ -467,6 +439,8 @@ def write_report(output_root: Path, grouped: pd.DataFrame, scenario_overview: pd
         "- `lookback_horizon_persistence_gaps.csv`: trial-level gaps against persistence.",
         "- `lookback_horizon_scenario_overview.csv`: sample counts and persistence difficulty by scenario.",
         "- `lookback_horizon_best_model_by_scenario.csv`: diagnostic ranking only; do not treat this as automatic scenario selection.",
+        "- `lookback_horizon_selection_by_horizon.csv`: validation-ranked model/lookback candidates within each horizon.",
+        "- `lookback_horizon_best_model_by_horizon.csv`: top validation candidate within each horizon; inspect the early-cycle trade-off before treating it as final.",
         "",
     ]
     if not scenario_overview.empty:
@@ -501,6 +475,13 @@ def run(args: argparse.Namespace) -> None:
     scenarios = load_scenarios(args)
     if args.limit_scenarios > 0:
         scenarios = scenarios[: args.limit_scenarios]
+    if args.split_mode == "condition-gap-within-file" and scenarios:
+        max_lookback = max(int(scenario["lookback_cycles"]) for scenario in scenarios)
+        if args.split_gap < max_lookback:
+            raise ValueError(
+                f"--split-gap={args.split_gap} is smaller than the largest lookback/early_cycle ({max_lookback}). "
+                "Use --split-gap at least as large as the largest lookback to reduce input-window overlap."
+            )
     models = parse_csv_list(args.models)
     split_seeds = parse_int_csv(args.split_seeds)
     seeds = parse_int_csv(args.seeds)
@@ -600,8 +581,15 @@ def parse_args() -> argparse.Namespace:
         default="",
         help="Comma-separated horizon values. Use with --lookbacks to build every lookback x horizon scenario.",
     )
-    parser.add_argument("--models", default="persistence,cpmlp_cpgru_fusion,cpmlp_dsconv_fusion")
-    parser.add_argument("--model-config-file", default="")
+    parser.add_argument(
+        "--models",
+        default="persistence,cpmlp,cpgru,cpdsconv,cpmlp_cpgru_fusion,cpmlp_dsconv_fusion,cpmlp_cpdsconv_fusion",
+    )
+    parser.add_argument(
+        "--model-config-file",
+        default="",
+        help="Optional explicit model-specific config. Leave empty for fair comparison from shared defaults.",
+    )
     parser.add_argument("--fixed-len", type=int, default=60)
     parser.add_argument("--target-mode", choices=["absolute", "delta"], default="delta")
     parser.add_argument("--feature-mode", default="practical")
@@ -610,7 +598,7 @@ def parse_args() -> argparse.Namespace:
         choices=["battery", "same-domain-eval", "chronological-within-file", "condition-gap-within-file"],
         default="condition-gap-within-file",
     )
-    parser.add_argument("--split-gap", type=int, default=5)
+    parser.add_argument("--split-gap", type=int, default=20)
     parser.add_argument("--eval-domain", default="")
     parser.add_argument("--skip-test-eval", action="store_true")
     parser.add_argument("--epochs", type=int, default=12)
