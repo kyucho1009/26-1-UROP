@@ -229,7 +229,7 @@ def write_commands(output_root: Path, commands: list[dict[str, Any]]) -> None:
         encoding="utf-8",
     )
     lines = [
-        "# Locked test commands generated from final_optuna_configs_by_horizon.json",
+        "# Locked test commands generated from the gap20 final Optuna config.",
         "# Do not edit hyperparameters after reviewing these test results.",
     ]
     lines.extend(item["command_text"] for item in commands)
@@ -362,10 +362,10 @@ def run(args: argparse.Namespace) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", default="final_optuna_configs_by_horizon.json")
+    parser.add_argument("--config", default="optuna_cpmlp_cpdsconv_tuning_gap20/final_optuna_configs_by_horizon.json")
     parser.add_argument("--script", default=Path(__file__).with_name("compare_soh_models.py"))
     parser.add_argument("--data-dir", default="raw_samples")
-    parser.add_argument("--output-root", default="locked_test_cpmlp_cpdsconv")
+    parser.add_argument("--output-root", default="locked_test_cpmlp_cpdsconv_gap20")
     parser.add_argument("--horizons", type=parse_horizons, default=None)
     parser.add_argument("--feature-mode", default="practical")
     parser.add_argument(
@@ -373,7 +373,7 @@ def parse_args() -> argparse.Namespace:
         choices=["battery", "same-domain-eval", "chronological-within-file", "condition-gap-within-file"],
         default="condition-gap-within-file",
     )
-    parser.add_argument("--split-gap", type=int, default=5)
+    parser.add_argument("--split-gap", type=int, default=20)
     parser.add_argument("--eval-domain", default="")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--split-seed", type=int, default=42)

@@ -31,7 +31,7 @@ BASE_CONFIG = {
     "target_mode": "delta",
     "feature_mode": "practical",
     "split_mode": "condition-gap-within-file",
-    "split_gap": 5,
+    "split_gap": 20,
     "fixed_len": 60,
     "early_cycle": 5,
     "horizon": 50,
@@ -426,8 +426,9 @@ def evaluate_config(
 
 
 def make_study(args: argparse.Namespace, name: str, sampler: Any, direction: str = "minimize") -> Any:
+    study_name = f"gap{args.split_gap}_{name}"
     kwargs = {
-        "study_name": name,
+        "study_name": study_name,
         "sampler": sampler,
         "direction": direction,
         "load_if_exists": args.resume,
@@ -797,7 +798,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument("--script", default=Path(__file__).with_name("compare_soh_models.py"))
     parser.add_argument("--data-dir", default="raw_samples")
-    parser.add_argument("--output-root", default="optuna_cpmlp_cpdsconv_tuning")
+    parser.add_argument("--output-root", default="optuna_cpmlp_cpdsconv_tuning_gap20")
     parser.add_argument("--base-config", default="final_tuned_cpmlp_cpdsconv_config.json")
     parser.add_argument("--storage", default="", help="Optional Optuna storage URL, e.g. sqlite:///optuna.db")
     parser.add_argument("--feature-mode", default="practical")
@@ -806,7 +807,7 @@ def parse_args() -> argparse.Namespace:
         choices=["battery", "same-domain-eval", "chronological-within-file", "condition-gap-within-file"],
         default="condition-gap-within-file",
     )
-    parser.add_argument("--split-gap", type=int, default=5)
+    parser.add_argument("--split-gap", type=int, default=20)
     parser.add_argument("--eval-domain", default="")
     parser.add_argument("--epochs", type=int, default=30)
     parser.add_argument("--batch-size", type=int, default=128)
@@ -864,6 +865,13 @@ def parse_args() -> argparse.Namespace:
         raise ValueError("--zero-output-init-candidates cannot be empty")
     if args.confirm_top_k <= 0:
         raise ValueError("--confirm-top-k must be positive")
+    if args.split_mode == "condition-gap-within-file":
+        min_gap = max(args.early_cycle_candidates) - 1
+        if args.split_gap < min_gap:
+            raise ValueError(
+                f"--split-gap={args.split_gap} is smaller than max early_cycle - 1 ({min_gap}). "
+                "Increase --split-gap or reduce --early-cycle-candidates to avoid overlapping input windows."
+            )
     return args
 
 
