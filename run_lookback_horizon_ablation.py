@@ -444,7 +444,7 @@ def write_report(output_root: Path, grouped: pd.DataFrame, scenario_overview: pd
         "",
     ]
     if not scenario_overview.empty:
-        lines.extend(["## Scenario Overview", "", scenario_overview.to_markdown(index=False), ""])
+        lines.extend(["## Scenario Overview", "", dataframe_to_markdown(scenario_overview), ""])
     preview_cols = [
         column
         for column in [
@@ -462,8 +462,29 @@ def write_report(output_root: Path, grouped: pd.DataFrame, scenario_overview: pd
         if column in grouped.columns
     ]
     if preview_cols:
-        lines.extend(["## Summary Preview", "", grouped[preview_cols].to_markdown(index=False), ""])
+        lines.extend(["## Summary Preview", "", dataframe_to_markdown(grouped[preview_cols]), ""])
     (output_root / "lookback_horizon_report.md").write_text("\n".join(lines), encoding="utf-8")
+
+
+def dataframe_to_markdown(frame: pd.DataFrame) -> str:
+    columns = [str(column) for column in frame.columns]
+    header = "| " + " | ".join(columns) + " |"
+    divider = "| " + " | ".join("---" for _ in columns) + " |"
+    body = []
+    for _, row in frame.iterrows():
+        body.append("| " + " | ".join(format_markdown_cell(row[column]) for column in frame.columns) + " |")
+    return "\n".join([header, divider, *body])
+
+
+def format_markdown_cell(value: Any) -> str:
+    pandas = require_pandas()
+    if value is None or pandas.isna(value):
+        return ""
+    if isinstance(value, float):
+        text = f"{value:.6g}"
+    else:
+        text = str(value)
+    return text.replace("|", "\\|").replace("\n", " ")
 
 
 def run(args: argparse.Namespace) -> None:
@@ -620,3 +641,4 @@ def parse_args() -> argparse.Namespace:
 
 if __name__ == "__main__":
     run(parse_args())
+
