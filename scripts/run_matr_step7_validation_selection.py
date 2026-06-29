@@ -472,6 +472,7 @@ def train_delta_model(
     val_loader,
     val_target_soh: np.ndarray,
     val_current_soh: np.ndarray,
+    target_scale: float,
     epochs: int,
     lr: float,
     weight_decay: float,
@@ -504,23 +505,25 @@ def train_delta_model(
             optimizer.step()
             train_losses.append(float(loss.detach().cpu()))
 
-        val_pred_delta, val_true_delta = predict_delta(model, val_loader, device=device)
+        val_pred_delta_scaled, val_true_delta_scaled = predict_delta(model, val_loader, device=device)
+        val_pred_delta = val_pred_delta_scaled / target_scale
         val_pred_soh = val_current_soh - val_pred_delta
         val_err = val_target_soh - val_pred_soh
         val_mae = float(np.mean(np.abs(val_err)))
         val_rmse = float(np.sqrt(np.mean(val_err**2)))
-        val_delta_mse = float(np.mean((val_true_delta - val_pred_delta) ** 2))
+        val_delta_mse = float(np.mean((val_true_delta_scaled - val_pred_delta_scaled) ** 2))
         row = {
             "epoch": epoch,
-            "train_delta_mse": float(np.mean(train_losses)),
-            "val_delta_mse": val_delta_mse,
+            "target_scale": float(target_scale),
+            "train_scaled_delta_mse": float(np.mean(train_losses)),
+            "val_scaled_delta_mse": val_delta_mse,
             "val_MAE_reconstructed_soh": val_mae,
             "val_RMSE_reconstructed_soh": val_rmse,
             "lr": float(optimizer.param_groups[0]["lr"]),
         }
         history.append(row)
         print(
-            f"epoch={epoch:03d} train_delta_mse={row['train_delta_mse']:.6g} "
+            f"epoch={epoch:03d} train_scaled_delta_mse={row['train_scaled_delta_mse']:.6g} "
             f"val_MAE_soh={val_mae:.6g}"
         )
 
@@ -622,7 +625,9 @@ This directory was produced by `scripts/run_matr_step7_validation_selection.py`.
 - Horizons: {config["horizons"]}
 - Features: {FEATURES}
 - Target: delta_soh = SOH_20 - SOH_(20+h)
-- Model selection: validation-only average scenario rank
+- Model selection: validation-only metric values; lowest average MAE across horizons,
+  then lower average RMSE, lower average MAPE, lower MAE standard deviation, and
+  higher average skill versus persistence
 - Selected model: {selected_model or "not selected"}
 
 The test split is saved only in split manifests. No test predictions or test
@@ -703,8 +708,10 @@ def evaluate_neural_model(
 
     X_train = normalize(train_split.X, mean, std)
     X_val = normalize(val_split.X, mean, std)
-    train_loader = make_loader(X_train, train_split.y_delta, batch_size=args.batch_size, shuffle=True)
-    val_loader = make_loader(X_val, val_split.y_delta, batch_size=args.batch_size, shuffle=False)
+    y_train_delta_scaled = (train_split.y_delta * args.target_scale).astype(np.float32)
+    y_val_delta_scaled = (val_split.y_delta * args.target_scale).astype(np.float32)
+    train_loader = make_loader(X_train, y_train_delta_scaled, batch_size=args.batch_size, shuffle=True)
+    val_loader = make_loader(X_val, y_val_delta_scaled, batch_size=args.batch_size, shuffle=False)
 
     device = args.device
     if device == "auto":
@@ -717,6 +724,7 @@ def evaluate_neural_model(
         val_loader,
         val_target_soh=val_split.y_soh_target,
         val_current_soh=val_split.current_soh,
+        target_scale=args.target_scale,
         epochs=args.epochs,
         lr=args.lr,
         weight_decay=args.weight_decay,
@@ -726,7 +734,8 @@ def evaluate_neural_model(
         device=device,
     )
 
-    pred_delta, true_delta = predict_delta(model, val_loader, device=device)
+    pred_delta_scaled, true_delta_scaled = predict_delta(model, val_loader, device=device)
+    pred_delta = pred_delta_scaled / args.target_scale
     pred_soh = val_split.current_soh - pred_delta
     metrics = metric_row_with_skill(val_split.y_soh_target, pred_soh, persistence_mae)
     checkpoint_path = checkpoint_dir / f"{model_name}.pt"
@@ -745,6 +754,7 @@ def evaluate_neural_model(
             "fixed_len": fixed_len,
             "features": FEATURES,
             "target": TARGET,
+            "target_scale": float(args.target_scale),
             "model_state_dict": model.state_dict(),
             "normalization_mean": mean.astype(np.float32),
             "normalization_std": std.astype(np.float32),
@@ -761,6 +771,7 @@ def evaluate_neural_model(
         "seed": seed,
         "horizon": horizon,
         "model": model_name,
+        "target_scale": float(args.target_scale),
         "n_validation_samples": int(len(val_split.y_soh_target)),
         **metrics,
         "best_epoch": int(best_epoch),
@@ -782,6 +793,13 @@ def aggregate_results(raw_df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame,
         )
         .sort_values(["horizon", "seed", "MAE", "RMSE", "model"])
     )
+    by_seed = add_cpmlp_comparison_columns(
+        by_seed,
+        group_cols=["dataset", "selection_stage", "seed", "horizon"],
+        mae_col="MAE",
+        rmse_col="RMSE",
+        mape_col="MAPE_percent",
+    )
 
     summary = (
         by_seed.groupby(["dataset", "selection_stage", "horizon", "model"], as_index=False)
@@ -798,6 +816,11 @@ def aggregate_results(raw_df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame,
             R2_std=("R2", "std"),
             Skill_MAE_vs_persistence_mean=("Skill_MAE_vs_persistence", "mean"),
             Skill_MAE_vs_persistence_std=("Skill_MAE_vs_persistence", "std"),
+            MAE_improvement_vs_cpmlp_mean=("MAE_improvement_vs_cpmlp", "mean"),
+            MAE_improvement_percent_vs_cpmlp_mean=("MAE_improvement_percent_vs_cpmlp", "mean"),
+            RMSE_improvement_vs_cpmlp_mean=("RMSE_improvement_vs_cpmlp", "mean"),
+            MAPE_improvement_vs_cpmlp_mean=("MAPE_improvement_vs_cpmlp", "mean"),
+            Skill_MAE_vs_cpmlp_mean=("Skill_MAE_vs_cpmlp", "mean"),
         )
         .sort_values(["horizon", "MAE_mean", "RMSE_mean", "model"])
     )
@@ -811,63 +834,108 @@ def aggregate_results(raw_df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame,
     return by_seed, summary, ranks
 
 
-def select_models(ranks: pd.DataFrame, horizons: Sequence[int]) -> tuple[pd.DataFrame, dict[str, Any], str]:
+def add_cpmlp_comparison_columns(
+    df: pd.DataFrame,
+    group_cols: Sequence[str],
+    mae_col: str,
+    rmse_col: str,
+    mape_col: str,
+) -> pd.DataFrame:
+    """Attach CPMLP-anchored metric deltas without affecting model selection."""
+    out = df.copy()
+    cpmlp = out[out["model"] == "cpmlp"][list(group_cols) + [mae_col, rmse_col, mape_col]].copy()
+    cpmlp = cpmlp.rename(
+        columns={
+            mae_col: "_cpmlp_mae",
+            rmse_col: "_cpmlp_rmse",
+            mape_col: "_cpmlp_mape",
+        }
+    )
+    out = out.merge(cpmlp, on=list(group_cols), how="left")
+    out["MAE_improvement_vs_cpmlp"] = out["_cpmlp_mae"] - out[mae_col]
+    out["MAE_improvement_percent_vs_cpmlp"] = np.where(
+        out["_cpmlp_mae"] > 0,
+        (out["_cpmlp_mae"] - out[mae_col]) / out["_cpmlp_mae"] * 100.0,
+        np.nan,
+    )
+    out["RMSE_improvement_vs_cpmlp"] = out["_cpmlp_rmse"] - out[rmse_col]
+    out["MAPE_improvement_vs_cpmlp"] = out["_cpmlp_mape"] - out[mape_col]
+    out["Skill_MAE_vs_cpmlp"] = np.where(
+        out["_cpmlp_mae"] > 0,
+        1.0 - out[mae_col] / out["_cpmlp_mae"],
+        np.nan,
+    )
+    return out.drop(columns=["_cpmlp_mae", "_cpmlp_rmse", "_cpmlp_mape"])
+
+
+def select_models(summary: pd.DataFrame, horizons: Sequence[int]) -> tuple[pd.DataFrame, dict[str, Any], str]:
     horizon_specific: dict[str, Any] = {}
     for horizon in horizons:
-        hdf = ranks[ranks["horizon"] == int(horizon)].copy()
+        hdf = summary[summary["horizon"] == int(horizon)].copy()
         if hdf.empty:
-            raise ValueError(f"missing rank rows for horizon {horizon}")
+            raise ValueError(f"missing validation summary rows for horizon {horizon}")
         hdf = hdf.sort_values(
             [
-                "scenario_rank",
                 "MAE_mean",
                 "RMSE_mean",
                 "MAPE_percent_mean",
+                "MAE_std",
+                "Skill_MAE_vs_persistence_mean",
                 "model",
-            ]
+            ],
+            ascending=[True, True, True, True, False, True],
         )
         best = hdf.iloc[0].to_dict()
         horizon_specific[str(horizon)] = {
             "horizon": int(horizon),
             "selected_model": str(best["model"]),
-            "scenario_rank": float(best["scenario_rank"]),
             "MAE_mean": float(best["MAE_mean"]),
             "RMSE_mean": float(best["RMSE_mean"]),
             "MAPE_percent_mean": float(best["MAPE_percent_mean"]),
             "Skill_MAE_vs_persistence_mean": float(best["Skill_MAE_vs_persistence_mean"]),
+            "MAE_improvement_vs_cpmlp_mean": float(best["MAE_improvement_vs_cpmlp_mean"]),
+            "MAE_improvement_percent_vs_cpmlp_mean": float(best["MAE_improvement_percent_vs_cpmlp_mean"]),
+            "Skill_MAE_vs_cpmlp_mean": float(best["Skill_MAE_vs_cpmlp_mean"]),
         }
 
     selection = (
-        ranks.groupby("model", as_index=False)
+        summary.groupby("model", as_index=False)
         .agg(
-            avg_rank=("scenario_rank", "mean"),
-            std_rank=("scenario_rank", "std"),
-            worst_rank=("scenario_rank", "max"),
+            avg_MAE_mean=("MAE_mean", "mean"),
+            avg_RMSE_mean=("RMSE_mean", "mean"),
+            avg_MAPE_percent_mean=("MAPE_percent_mean", "mean"),
+            std_MAE_mean=("MAE_mean", "std"),
+            worst_MAE_mean=("MAE_mean", "max"),
             average_Skill_MAE_vs_persistence=("Skill_MAE_vs_persistence_mean", "mean"),
+            average_MAE_improvement_vs_cpmlp=("MAE_improvement_vs_cpmlp_mean", "mean"),
+            average_MAE_improvement_percent_vs_cpmlp=("MAE_improvement_percent_vs_cpmlp_mean", "mean"),
+            average_Skill_MAE_vs_cpmlp=("Skill_MAE_vs_cpmlp_mean", "mean"),
             horizons_evaluated=("horizon", "nunique"),
         )
         .copy()
     )
-    selection["std_rank"] = selection["std_rank"].fillna(0.0)
+    selection["std_MAE_mean"] = selection["std_MAE_mean"].fillna(0.0)
     expected_horizons = len(set(int(h) for h in horizons))
     missing = selection[selection["horizons_evaluated"] != expected_horizons]
     if not missing.empty:
         raise ValueError(
-            "all models must have rank rows for every horizon; incomplete models: "
+            "all models must have validation rows for every horizon; incomplete models: "
             + ", ".join(missing["model"].astype(str).tolist())
         )
     selection = selection.sort_values(
         [
-            "avg_rank",
-            "std_rank",
-            "worst_rank",
+            "avg_MAE_mean",
+            "avg_RMSE_mean",
+            "avg_MAPE_percent_mean",
+            "std_MAE_mean",
             "average_Skill_MAE_vs_persistence",
             "model",
         ],
-        ascending=[True, True, True, False, True],
+        ascending=[True, True, True, True, False, True],
     ).reset_index(drop=True)
     selected_model = str(selection.iloc[0]["model"])
     selection["selected"] = selection["model"] == selected_model
+    selection["selection_rule"] = "lowest_avg_validation_MAE_then_RMSE_MAPE_stdMAE_skill"
     return selection, horizon_specific, selected_model
 
 
@@ -963,6 +1031,8 @@ def apply_debug_overrides(args: argparse.Namespace) -> None:
 
 def run(args: argparse.Namespace) -> None:
     apply_debug_overrides(args)
+    if args.target_scale <= 0:
+        raise ValueError("--target-scale must be positive")
     data_root = Path(args.data_root)
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -1002,6 +1072,7 @@ def run(args: argparse.Namespace) -> None:
         "models": models,
         "features": FEATURES,
         "target": TARGET,
+        "target_scale": args.target_scale,
         "fixed_len": args.fixed_len,
         "batch_size": args.batch_size,
         "epochs": args.epochs,
@@ -1021,6 +1092,7 @@ def run(args: argparse.Namespace) -> None:
         "zero_output_init": args.zero_output_init,
         "debug": args.debug,
         "test_metrics_used": False,
+        "selection_rule": "lowest_avg_validation_MAE_then_RMSE_MAPE_stdMAE_skill",
     }
     write_simple_yaml(output_dir / "config.yaml", config)
     save_json(output_dir / "dataset_manifest.json", dataset_manifest)
@@ -1122,7 +1194,7 @@ def run(args: argparse.Namespace) -> None:
     summary.to_csv(output_dir / "val_summary_by_model_horizon.csv", index=False)
     ranks.to_csv(output_dir / "val_rank_by_horizon.csv", index=False)
 
-    selection, horizon_specific_best, selected_model = select_models(ranks, horizons)
+    selection, horizon_specific_best, selected_model = select_models(summary, horizons)
     selection.to_csv(output_dir / "model_selection_summary.csv", index=False)
     save_json(output_dir / "horizon_specific_best.json", horizon_specific_best)
 
@@ -1134,7 +1206,9 @@ def run(args: argparse.Namespace) -> None:
         "horizons": horizons,
         "features": FEATURES,
         "target": TARGET,
-        "selection_rule": "scenario_wise_average_validation_rank",
+        "target_scale": args.target_scale,
+        "selection_rule": "lowest_avg_validation_MAE_then_RMSE_MAPE_stdMAE_skill",
+        "rank_used_for_selection": False,
         "selected_model": selected_model,
         "horizon_specific_best": horizon_specific_best,
     }
@@ -1170,6 +1244,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--batch-size", type=int, default=32)
     parser.add_argument("--epochs", type=int, default=50)
     parser.add_argument("--lr", type=float, default=1e-3)
+    parser.add_argument(
+        "--target-scale",
+        type=float,
+        default=1.0,
+        help="Scale delta_soh targets during neural training; SOH reconstruction divides predictions by this value.",
+    )
     parser.add_argument("--weight-decay", type=float, default=1e-5)
     parser.add_argument("--patience", type=int, default=10)
     parser.add_argument("--min-delta", type=float, default=0.0)
