@@ -59,6 +59,35 @@ MODEL_ORDER = [
     "gru_dsconv",
 ]
 
+DATASET_LABEL_PREFIXES = [
+    ("ISU-ILCC", "ISU_ILCC"),
+    ("UL-PUR", "UL_PUR"),
+    ("NA-ion", "NA-ion"),
+    ("ZN-coin", "ZN-coin"),
+    ("Stanford_Nova_Regular_Ref", "Stanford"),
+    ("Stanford_", "Stanford_2"),
+    ("MICH_MCForm", "MICH"),
+    ("MICH_", "MICH_EXP"),
+    ("Tongji", "Tongji"),
+    ("CALB", "CALB"),
+    ("CALCE", "CALCE"),
+    ("HNEI", "HNEI"),
+    ("HUST", "HUST"),
+    ("MATR", "MATR"),
+    ("RWTH", "RWTH"),
+    ("SDU", "SDU"),
+    ("SNL", "SNL"),
+    ("XJTU", "XJTU"),
+]
+
+
+def infer_dataset_label(filename: str | Path) -> str:
+    name = Path(filename).name
+    for prefix, dataset in DATASET_LABEL_PREFIXES:
+        if name.startswith(prefix):
+            return dataset
+    return pipe.infer_battery_domain(name)
+
 
 def train_model_compat(model, train_loader, val_loader, **kwargs):
     """Call pipe.train_model while tolerating older pipeline files in Colab."""
@@ -802,6 +831,72 @@ def write_metrics(metrics_rows: list[dict[str, float]], out_dir: Path) -> pd.Dat
     return metrics
 
 
+def add_report_group_columns(result_df: pd.DataFrame) -> pd.DataFrame:
+    """Attach dataset, condition, and SOH-band labels for subgroup reporting."""
+    df = result_df.copy()
+    if "dataset" not in df.columns:
+        df["dataset"] = df["file"].map(infer_dataset_label)
+    if "condition_group" not in df.columns:
+        if "experiment_condition" in df.columns:
+            df["condition_group"] = df["experiment_condition"]
+        else:
+            df["condition_group"] = df["file"].map(pipe.infer_experiment_condition)
+
+    soh = pd.to_numeric(df["actual_soh"], errors="coerce")
+    df["soh_band"] = np.select(
+        [soh >= 0.90, soh >= 0.80],
+        ["early_ge_0.90", "mid_0.80_0.90"],
+        default="late_lt_0.80",
+    )
+    return df
+
+
+def collect_group_metric_rows(
+    model_name: str,
+    split_name: str,
+    result_df: pd.DataFrame,
+) -> list[dict[str, object]]:
+    df = add_report_group_columns(result_df)
+    rows: list[dict[str, object]] = []
+    for group_by in ["dataset", "condition_group", "soh_band"]:
+        for group_value, group in df.groupby(group_by, dropna=False):
+            metrics = compute_metrics(group["actual_soh"].to_numpy(), group["pred_soh"].to_numpy(), group)
+            if "target_cycle" in group.columns:
+                target_cycle = pd.to_numeric(group["target_cycle"], errors="coerce")
+                target_cycle_min = int(target_cycle.min()) if target_cycle.notna().any() else None
+                target_cycle_max = int(target_cycle.max()) if target_cycle.notna().any() else None
+            else:
+                target_cycle_min = None
+                target_cycle_max = None
+            row: dict[str, object] = {
+                "model": model_name,
+                "split": split_name,
+                "group_by": group_by,
+                "group_value": str(group_value),
+                "n_samples": int(len(group)),
+                "n_cells": int(group["cell_id"].nunique()) if "cell_id" in group.columns else 0,
+                "target_cycle_min": target_cycle_min,
+                "target_cycle_max": target_cycle_max,
+            }
+            row.update(metrics)
+            rows.append(row)
+    return rows
+
+
+def write_group_metrics(group_metric_rows: list[dict[str, object]], out_dir: Path) -> pd.DataFrame:
+    if not group_metric_rows:
+        return pd.DataFrame()
+    group_metrics = pd.DataFrame(group_metric_rows)
+    sort_columns = [
+        column
+        for column in ["split", "group_by", "group_value", "RMSE", "MAE", "model"]
+        if column in group_metrics.columns
+    ]
+    group_metrics = group_metrics.sort_values(sort_columns)
+    group_metrics.to_csv(out_dir / "model_group_metrics.csv", index=False)
+    return group_metrics
+
+
 def build_previous_soh_index(files: Iterable[Path], fixed_len: int) -> dict[str, dict[str, object]]:
     index: dict[str, dict[str, object]] = {}
     for fp in files:
@@ -1159,6 +1254,7 @@ def run(args: argparse.Namespace) -> None:
     val_loader = pipe.make_loader(X_val, y_val_model, batch_size=args.batch_size, shuffle=False)
 
     metrics_rows = []
+    group_metric_rows = []
     selected_models = parse_models(args.models)
 
     if "persistence" in selected_models:
@@ -1166,6 +1262,7 @@ def run(args: argparse.Namespace) -> None:
         val_result_df = pipe.make_result_df(val.meta, val.y, val_pred)
         val_result_df["baseline_soh"] = val_baseline
         val_result_df.to_csv(val_pred_dir / "persistence_val_predictions.csv", index=False)
+        group_metric_rows.extend(collect_group_metric_rows("persistence", "val", val_result_df))
 
         row = {
             "model": "persistence",
@@ -1177,8 +1274,10 @@ def run(args: argparse.Namespace) -> None:
             result_df["baseline_soh"] = test_baseline
             row.update(compute_metrics(test.y, pred, result_df))
             result_df.to_csv(pred_dir / "persistence_test_predictions.csv", index=False)
+            group_metric_rows.extend(collect_group_metric_rows("persistence", "test", result_df))
         metrics_rows.append(row)
         write_metrics(metrics_rows, out_dir)
+        write_group_metrics(group_metric_rows, out_dir)
         print(pd.Series(row).to_string())
 
     device = args.device
@@ -1271,6 +1370,7 @@ def run(args: argparse.Namespace) -> None:
             val_result_df["pred_delta_soh"] = val_raw_pred / args.target_scale
 
         val_metrics = prefix_metrics(compute_metrics(val.y, val_pred, val_result_df), "val")
+        group_metric_rows.extend(collect_group_metric_rows(model_name, "val", val_result_df))
         row = {"model": model_name, **val_metrics}
         if not args.skip_test_eval:
             raw_pred, raw_true = pipe.predict_loader(model, test_loader, device=device)
@@ -1284,6 +1384,7 @@ def run(args: argparse.Namespace) -> None:
                 result_df["actual_delta_soh"] = raw_true / args.target_scale
                 result_df["pred_delta_soh"] = raw_pred / args.target_scale
             row.update(compute_metrics(true, pred, result_df))
+            group_metric_rows.extend(collect_group_metric_rows(model_name, "test", result_df))
         checkpoint_path = checkpoint_dir / f"{model_name}.pt"
         row["checkpoint_path"] = str(checkpoint_path)
         torch.save(
@@ -1312,9 +1413,11 @@ def run(args: argparse.Namespace) -> None:
         if not args.skip_test_eval:
             result_df.to_csv(pred_dir / f"{model_name}_test_predictions.csv", index=False)
         write_metrics(metrics_rows, out_dir)
+        write_group_metrics(group_metric_rows, out_dir)
         print(pd.Series(row).to_string())
 
     metrics = write_metrics(metrics_rows, out_dir)
+    write_group_metrics(group_metric_rows, out_dir)
     print("\n=== model comparison ===")
     print(metrics.to_string(index=False))
 
