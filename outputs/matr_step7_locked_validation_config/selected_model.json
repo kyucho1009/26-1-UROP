@@ -1,0 +1,34 @@
+{
+  "dataset": "MATR",
+  "selection_stage": "locked_after_validation_only_optuna_tuning",
+  "test_metrics_used": false,
+  "rank_used_for_selection": false,
+  "lookback_cycles": 20,
+  "horizons": [10, 50, 100],
+  "features": ["current", "voltage", "dV"],
+  "target": "delta_soh",
+  "target_scale": 100.0,
+  "selection_rule": "lowest_avg_validation_MAE_then_RMSE_MAPE_stdMAE_skill",
+  "selected_model": "cpmlp_cpdsconv_fusion",
+  "selected_hyperparameters": {
+    "batch_size": 16,
+    "dropout": 0.35,
+    "dsconv_channels": 64,
+    "epochs": 100,
+    "gru_embed_dim": 64,
+    "gru_hidden": 64,
+    "lr": 0.0004076706,
+    "mlp_embed_dim": 64,
+    "model_hidden": 256,
+    "patience": 12,
+    "weight_decay": 0.0000030463,
+    "clip_grad_norm": 1.0
+  },
+  "validation_evidence": {
+    "avg_MAE_mean": 0.0017806132,
+    "avg_RMSE_mean": 0.0056678547,
+    "avg_MAPE_percent_mean": 0.1931147271,
+    "average_Skill_MAE_vs_persistence": 0.2643207201,
+    "average_MAE_improvement_percent_vs_cpmlp": 7.2923750541
+  }
+}
