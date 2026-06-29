@@ -37,10 +37,18 @@ TARGET = "delta_soh"
 DEFAULT_MODELS = [
     "persistence",
     "cpmlp",
-    "cpgru",
-    "cpdsconv",
     "cpmlp_gru_fusion",
+    "cpgru",
+    "cpmlp_cpgru_fusion",
     "cpmlp_dsconv_fusion",
+    "cpmlp_dsconv_nogru",
+    "cpdsconv",
+    "cpmlp_cpdsconv_fusion",
+    "cpmlp_gru_residual",
+    "flatten_mlp",
+    "curve_cnn",
+    "gru_only",
+    "gru_dsconv",
 ]
 METRIC_COLUMNS = ["MAE", "RMSE", "MAPE_percent", "R2", "Skill_MAE_vs_persistence"]
 
