@@ -40,7 +40,9 @@ DEFAULT_MODELS = [
     "cpgru",
     "cpdsconv",
     "cpmlp_gru_fusion",
+    "cpmlp_cpgru_fusion",
     "cpmlp_dsconv_fusion",
+    "cpmlp_cpdsconv_fusion",
 ]
 METRIC_COLUMNS = ["MAE", "RMSE", "MAPE_percent", "R2", "Skill_MAE_vs_persistence"]
 
