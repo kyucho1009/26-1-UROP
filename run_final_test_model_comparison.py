@@ -478,6 +478,7 @@ def write_report(
         "Selection rule: mean test RMSE, then mean test MAE across the requested seeds and split seeds.",
         "Validation metrics are written for diagnostics only; final ranking uses test metrics after the scenario is fixed.",
         "Default dataset policy is Li-ion only via the non-Li-ion filename exclusion regex.",
+        "No tuned/Optuna config file is loaded; all models share the same command-line training defaults unless explicitly overridden.",
         "",
         "## Best Learned Model By Scenario",
         "",
@@ -517,6 +518,7 @@ def run_policy_audit(args: argparse.Namespace, output_root: Path, metrics_paths:
         str(audit_dir),
         "--exclude-models",
         args.exclude_models_from_final,
+        "--exclude-tuned-outputs",
         "--require-multi-model-metrics",
         "--report-limit",
         str(args.report_limit),
@@ -656,14 +658,20 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--feature-mode", default="practical")
     parser.add_argument(
         "--split-mode",
-        choices=["battery", "same-domain-eval", "chronological-within-file", "condition-gap-within-file"],
-        default="condition-gap-within-file",
+        choices=[
+            "battery",
+            "condition-group",
+            "same-domain-eval",
+            "chronological-within-file",
+            "condition-gap-within-file",
+        ],
+        default="condition-group",
     )
     parser.add_argument("--split-gap", type=int, default=20)
     parser.add_argument("--eval-domain", default="")
     parser.add_argument("--epochs", type=int, default=30)
     parser.add_argument("--batch-size", type=int, default=128)
-    parser.add_argument("--lr", type=float, default=5e-4)
+    parser.add_argument("--lr", type=float, default=1e-3)
     parser.add_argument("--weight-decay", type=float, default=1e-5)
     parser.add_argument("--mlp-embed-dim", type=int, default=64)
     parser.add_argument("--gru-embed-dim", type=int, default=64)
@@ -671,14 +679,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--gru-hidden", type=int, default=64)
     parser.add_argument("--dsconv-channels", type=int, default=64)
     parser.add_argument("--dropout", type=float, default=0.1)
-    parser.add_argument("--patience", type=int, default=8)
+    parser.add_argument("--patience", type=int, default=0)
     parser.add_argument("--min-delta", type=float, default=0.0)
-    parser.add_argument("--huber-delta", type=float, default=0.05)
+    parser.add_argument("--huber-delta", type=float, default=0.02)
     parser.add_argument("--clip-grad-norm", type=float, default=1.0)
     parser.add_argument("--lr-scheduler-patience", type=int, default=0)
     parser.add_argument("--lr-scheduler-factor", type=float, default=0.5)
-    parser.add_argument("--target-scale", type=float, default=10.0)
-    parser.add_argument("--zero-output-init", dest="zero_output_init", action="store_true", default=True)
+    parser.add_argument("--target-scale", type=float, default=1.0)
+    parser.add_argument("--zero-output-init", dest="zero_output_init", action="store_true", default=False)
     parser.add_argument("--no-zero-output-init", dest="zero_output_init", action="store_false")
     parser.add_argument("--device", default="auto")
     parser.add_argument("--seeds", default="42")
