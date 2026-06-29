@@ -38,6 +38,7 @@ DEFAULT_MODELS = [
     "persistence",
     "cpmlp",
     "cpmlp_gru_fusion",
+<<<<<<< HEAD
     "cpgru",
     "cpmlp_cpgru_fusion",
     "cpmlp_dsconv_fusion",
@@ -49,6 +50,11 @@ DEFAULT_MODELS = [
     "curve_cnn",
     "gru_only",
     "gru_dsconv",
+=======
+    "cpmlp_cpgru_fusion",
+    "cpmlp_dsconv_fusion",
+    "cpmlp_cpdsconv_fusion",
+>>>>>>> 0468562fb87107283cbee43530376a3e654d1877
 ]
 METRIC_COLUMNS = ["MAE", "RMSE", "MAPE_percent", "R2", "Skill_MAE_vs_persistence"]
 
