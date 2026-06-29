@@ -32,7 +32,13 @@ DEFAULT_MODELS = ",".join(
         "gru_dsconv",
     ]
 )
-DEFAULT_SCENARIOS = "20:10:h10_lb20,20:50:h50_lb20,20:100:h100_lb20"
+DEFAULT_LOOKBACKS = "5,10,20"
+DEFAULT_HORIZONS = "10,50,100"
+DEFAULT_SCENARIOS = ",".join(
+    f"{lookback}:{horizon}:h{horizon}_lb{lookback}"
+    for horizon in [10, 50, 100]
+    for lookback in [5, 10, 20]
+)
 DEFAULT_LIION_EXCLUDE_REGEX = r"^(NA-ion|ZN-coin)"
 
 
@@ -89,6 +95,33 @@ def parse_scenarios(value: str) -> list[dict[str, Any]]:
     if not scenarios:
         raise ValueError("at least one scenario is required")
     return scenarios
+
+
+def build_grid_scenarios(lookbacks: str, horizons: str) -> list[dict[str, Any]]:
+    scenarios = []
+    index = 1
+    for horizon in parse_int_csv(horizons):
+        for lookback in parse_int_csv(lookbacks):
+            scenarios.append(
+                {
+                    "name": f"h{horizon}_lb{lookback}",
+                    "lookback_cycles": lookback,
+                    "horizon": horizon,
+                    "index": index,
+                }
+            )
+            index += 1
+    if not scenarios:
+        raise ValueError("--lookbacks and --horizons must produce at least one scenario")
+    return scenarios
+
+
+def load_scenarios(args: argparse.Namespace) -> list[dict[str, Any]]:
+    if args.lookbacks or args.horizons:
+        lookbacks = args.lookbacks or DEFAULT_LOOKBACKS
+        horizons = args.horizons or DEFAULT_HORIZONS
+        return build_grid_scenarios(lookbacks, horizons)
+    return parse_scenarios(args.scenarios)
 
 
 def ps_quote(value: str) -> str:
@@ -535,7 +568,7 @@ def run(args: argparse.Namespace) -> None:
     output_root = to_abs_path(args.output_root)
     output_root.mkdir(parents=True, exist_ok=True)
 
-    scenarios = parse_scenarios(args.scenarios)
+    scenarios = load_scenarios(args)
     if args.split_mode == "condition-gap-within-file":
         max_lookback = max(int(item["lookback_cycles"]) for item in scenarios)
         if args.split_gap < max_lookback:
@@ -652,7 +685,24 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--data-dir", default="raw_samples")
     parser.add_argument("--output-root", default="final_test_model_comparison")
     parser.add_argument("--models", default=DEFAULT_MODELS)
-    parser.add_argument("--scenarios", default=DEFAULT_SCENARIOS)
+    parser.add_argument(
+        "--scenarios",
+        default=DEFAULT_SCENARIOS,
+        help=(
+            "Comma-separated lookback:horizon:name entries. Default compares "
+            "lookback 5/10/20 across horizons 10/50/100 while keeping gap fixed at 20."
+        ),
+    )
+    parser.add_argument(
+        "--lookbacks",
+        default="",
+        help="Optional comma-separated lookback cycles. Use with --horizons to build a grid.",
+    )
+    parser.add_argument(
+        "--horizons",
+        default="",
+        help="Optional comma-separated horizons. Use with --lookbacks to build a grid.",
+    )
     parser.add_argument("--fixed-len", type=int, default=60)
     parser.add_argument("--target-mode", choices=["absolute", "delta"], default="delta")
     parser.add_argument("--feature-mode", default="practical")
