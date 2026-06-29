@@ -410,6 +410,42 @@ def group_files_by_experiment_condition(files: Sequence[str | Path]) -> dict[str
     return groups
 
 
+def split_files_by_experiment_condition(
+    files: Sequence[str | Path],
+    val_ratio: float = 0.15,
+    test_ratio: float = 0.15,
+    seed: int = DEFAULT_SEED,
+) -> tuple[list[Path], list[Path], list[Path]]:
+    """Condition-group split: all files from the same condition stay together."""
+    groups = group_files_by_experiment_condition(files)
+    condition_names = sorted(groups)
+    if len(condition_names) < 3:
+        counts = ", ".join(f"{name}={len(groups[name])}" for name in condition_names)
+        raise ValueError(
+            "need at least 3 experiment-condition groups for train/val/test split. "
+            f"Available groups: {counts}"
+        )
+
+    rng = random.Random(seed)
+    rng.shuffle(condition_names)
+    n = len(condition_names)
+    n_test = max(1, int(round(n * test_ratio)))
+    n_val = max(1, int(round(n * val_ratio)))
+    n_train = n - n_val - n_test
+    if n_train < 1:
+        n_train, n_val, n_test = 1, 1, n - 2
+
+    train_conditions = condition_names[:n_train]
+    val_conditions = condition_names[n_train : n_train + n_val]
+    test_conditions = condition_names[n_train + n_val :]
+
+    def flatten(selected: Sequence[str]) -> list[Path]:
+        paths = [path for condition in selected for path in groups[condition]]
+        return sorted(paths)
+
+    return flatten(train_conditions), flatten(val_conditions), flatten(test_conditions)
+
+
 def build_condition_gap_splits_within_files(
     files: Iterable[str | Path],
     early_cycle: int = EARLY_CYCLE,
