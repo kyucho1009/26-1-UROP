@@ -1141,6 +1141,13 @@ def run(args: argparse.Namespace) -> None:
         train = pipe.build_dataset(train_files, early_cycle=args.early_cycle, horizon=args.horizon, fixed_len=args.fixed_len)
         val = pipe.build_dataset(val_files, early_cycle=args.early_cycle, horizon=args.horizon, fixed_len=args.fixed_len)
         test = pipe.build_dataset(test_files, early_cycle=args.early_cycle, horizon=args.horizon, fixed_len=args.fixed_len)
+    elif args.split_mode == "condition-group":
+        if len(files) < 3:
+            raise ValueError("need at least 3 pkl files for train/val/test split")
+        train_files, val_files, test_files = pipe.split_files_by_experiment_condition(files, seed=split_seed)
+        train = pipe.build_dataset(train_files, early_cycle=args.early_cycle, horizon=args.horizon, fixed_len=args.fixed_len)
+        val = pipe.build_dataset(val_files, early_cycle=args.early_cycle, horizon=args.horizon, fixed_len=args.fixed_len)
+        test = pipe.build_dataset(test_files, early_cycle=args.early_cycle, horizon=args.horizon, fixed_len=args.fixed_len)
     elif args.split_mode == "same-domain-eval":
         if len(files) < 3:
             raise ValueError("need at least 3 pkl files for train/val/test split")
@@ -1479,6 +1486,7 @@ def parse_args() -> argparse.Namespace:
         "--split-mode",
         choices=[
             "battery",
+            "condition-group",
             "same-domain-eval",
             "chronological-within-file",
             "condition-gap-within-file",
@@ -1486,6 +1494,7 @@ def parse_args() -> argparse.Namespace:
         default="battery",
         help=(
             "battery keeps the original file-level random split. "
+            "condition-group keeps all files from the same inferred experiment condition in one split. "
             "same-domain-eval holds out one inferred domain and splits that same domain into validation/test. "
             "chronological-within-file splits sliding-window samples inside each pkl by target-cycle order. "
             "condition-gap-within-file does the same with experiment-condition labels and unused gap windows."
