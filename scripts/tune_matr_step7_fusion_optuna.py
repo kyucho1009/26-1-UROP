@@ -136,6 +136,8 @@ def build_step7_command(
         str(output_dir),
         "--lookback",
         str(args.lookback),
+        "--sample-mode",
+        str(args.sample_mode),
         "--horizons",
         *[str(item) for item in horizons],
         "--seeds",
@@ -429,6 +431,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--models", nargs="+", default=DEFAULT_TUNE_MODELS)
     parser.add_argument("--target-scale", type=float, default=100.0)
     parser.add_argument("--lookback", type=int, default=20)
+    parser.add_argument(
+        "--sample-mode",
+        choices=["first-window", "sliding-window"],
+        default="first-window",
+        help="Pass-through sample mode for the Step 7 validation script.",
+    )
     parser.add_argument("--fixed-len", type=int, default=100)
     parser.add_argument("--search-horizons", nargs="+", default=["10", "50", "100"])
     parser.add_argument("--search-seeds", nargs="+", default=["42"])
@@ -482,6 +490,7 @@ def main() -> None:
         {
             "models": args.models,
             "target_scale": args.target_scale,
+            "sample_mode": args.sample_mode,
             "search_horizons": args.search_horizons,
             "search_seeds": args.search_seeds,
             "confirm_horizons": args.confirm_horizons,

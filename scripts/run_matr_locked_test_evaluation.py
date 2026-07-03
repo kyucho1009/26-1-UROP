@@ -74,6 +74,7 @@ def build_runtime_config(config: dict[str, Any], args: argparse.Namespace) -> di
         "selected_model": selected_model,
         "models": models,
         "lookback": int(args.lookback or config.get("lookback_cycles", 20)),
+        "sample_mode": str(args.sample_mode or config.get("sample_mode", step7.SAMPLE_MODE_FIRST_WINDOW)),
         "horizons": [int(item) for item in (args.horizons or config.get("horizons", [10, 50, 100]))],
         "seeds": [int(item) for item in (args.seeds or config.get("seeds", [42, 43, 44]))],
         "target_scale": float(args.target_scale or config_value(config, "target_scale", 1.0)),
@@ -288,6 +289,7 @@ def run(args: argparse.Namespace) -> None:
         lookback=cfg["lookback"],
         horizons=cfg["horizons"],
         fixed_len=cfg["fixed_len"],
+        sample_mode=cfg["sample_mode"],
     )
     records_by_id = {record.battery_id: record for record in records}
 
@@ -316,14 +318,21 @@ def run(args: argparse.Namespace) -> None:
             records_by_id=records_by_id,
             horizons=cfg["horizons"],
             lookback=cfg["lookback"],
+            sample_mode=cfg["sample_mode"],
         )
         save_json(output_dir / f"split_manifest_seed{seed}.json", split_manifest)
         split_manifests.append(split_manifest)
 
         for horizon in cfg["horizons"]:
-            train_split = step7.build_horizon_split(records_by_id, split_ids["train"], "train", horizon, cfg["lookback"])
-            val_split = step7.build_horizon_split(records_by_id, split_ids["validation"], "validation", horizon, cfg["lookback"])
-            test_split = step7.build_horizon_split(records_by_id, split_ids["test"], "test", horizon, cfg["lookback"])
+            train_split = step7.build_horizon_split(
+                records_by_id, split_ids["train"], "train", horizon, cfg["lookback"], cfg["sample_mode"]
+            )
+            val_split = step7.build_horizon_split(
+                records_by_id, split_ids["validation"], "validation", horizon, cfg["lookback"], cfg["sample_mode"]
+            )
+            test_split = step7.build_horizon_split(
+                records_by_id, split_ids["test"], "test", horizon, cfg["lookback"], cfg["sample_mode"]
+            )
             step7.ensure_non_empty_split(train_split, "train", seed, horizon)
             step7.ensure_non_empty_split(val_split, "validation", seed, horizon)
             step7.ensure_non_empty_split(test_split, "test", seed, horizon)
@@ -493,6 +502,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--models", nargs="+", default=None)
     parser.add_argument("--include-references", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--lookback", type=int, default=None)
+    parser.add_argument("--sample-mode", choices=step7.SAMPLE_MODES, default=None)
     parser.add_argument("--horizons", type=int, nargs="+", default=None)
     parser.add_argument("--seeds", type=int, nargs="+", default=None)
     parser.add_argument("--fixed-len", type=int, default=None)

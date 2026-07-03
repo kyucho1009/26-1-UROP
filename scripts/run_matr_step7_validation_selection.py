@@ -32,23 +32,17 @@ except ModuleNotFoundError as exc:
 
 DATASET = "MATR"
 SELECTION_STAGE = "step7_validation_only"
+SAMPLE_MODE_FIRST_WINDOW = "first-window"
+SAMPLE_MODE_SLIDING_WINDOW = "sliding-window"
+SAMPLE_MODES = [SAMPLE_MODE_FIRST_WINDOW, SAMPLE_MODE_SLIDING_WINDOW]
 FEATURES = ["current", "voltage", "dV"]
 TARGET = "delta_soh"
 DEFAULT_MODELS = [
     "persistence",
     "cpmlp",
-    "cpmlp_gru_fusion",
     "cpgru",
-    "cpmlp_cpgru_fusion",
-    "cpmlp_dsconv_fusion",
-    "cpmlp_dsconv_nogru",
     "cpdsconv",
-    "cpmlp_cpdsconv_fusion",
-    "cpmlp_gru_residual",
-    "flatten_mlp",
-    "curve_cnn",
-    "gru_only",
-    "gru_dsconv",
+    "cpmlp_gru_fusion",
     "cpmlp_cpgru_fusion",
     "cpmlp_dsconv_fusion",
     "cpmlp_cpdsconv_fusion",
@@ -64,6 +58,8 @@ class BatteryRecord:
     X_early: np.ndarray
     soh_current: float
     target_soh_by_horizon: dict[int, float]
+    features_by_cycle: dict[int, np.ndarray]
+    soh_by_cycle: dict[int, float]
     available_cycles: list[int]
     reference_capacity: float
 
@@ -93,6 +89,29 @@ def extract_practical_features(cycle: dict[str, Any], fixed_len: int) -> np.ndar
     d_voltage = np.gradient(voltage).astype(np.float32)
     features = np.stack([current, voltage, d_voltage], axis=1)
     return pipe.resample_cycle(features, fixed_len=fixed_len)
+
+
+def valid_sliding_window_ends(record: BatteryRecord, horizon: int, lookback: int) -> list[int]:
+    """Return current-cycle numbers with complete input cycles and target SOH."""
+    ends: list[int] = []
+    feature_cycles = record.features_by_cycle
+    soh_by_cycle = record.soh_by_cycle
+    for end_cycle in sorted(soh_by_cycle):
+        input_start = end_cycle - lookback + 1
+        target_cycle = end_cycle + int(horizon)
+        if input_start < 1 or target_cycle not in soh_by_cycle:
+            continue
+        if all(cycle_number in feature_cycles for cycle_number in range(input_start, end_cycle + 1)):
+            ends.append(end_cycle)
+    return ends
+
+
+def count_horizon_samples(record: BatteryRecord, horizon: int, lookback: int, sample_mode: str) -> int:
+    if sample_mode == SAMPLE_MODE_FIRST_WINDOW:
+        return int(int(horizon) in record.target_soh_by_horizon)
+    if sample_mode == SAMPLE_MODE_SLIDING_WINDOW:
+        return len(valid_sliding_window_ends(record, int(horizon), lookback))
+    raise ValueError(f"unknown sample mode: {sample_mode}")
 
 
 def is_matr_file(path: str | Path) -> bool:
@@ -129,6 +148,7 @@ def load_matr_battery(
     lookback: int,
     horizons: Sequence[int],
     fixed_len: int,
+    sample_mode: str = SAMPLE_MODE_FIRST_WINDOW,
 ) -> tuple[BatteryRecord | None, dict[str, Any]]:
     if not is_matr_file(path):
         raise ValueError(f"refusing to load non-MATR file: {path}")
@@ -154,7 +174,8 @@ def load_matr_battery(
         except Exception as exc:
             soh_errors.append({"cycle_number": cycle_number, "reason": str(exc)})
 
-        if 1 <= cycle_number <= lookback:
+        should_extract_features = sample_mode == SAMPLE_MODE_SLIDING_WINDOW or 1 <= cycle_number <= lookback
+        if should_extract_features:
             try:
                 features_by_cycle[cycle_number] = extract_practical_features(cycle, fixed_len=fixed_len)
             except Exception as exc:
@@ -194,7 +215,38 @@ def load_matr_battery(
         "feature_order": FEATURES,
     }
 
-    if missing_input_cycles or missing_current_soh or not target_soh_by_horizon:
+    first_window_available = not missing_input_cycles and not missing_current_soh and bool(target_soh_by_horizon)
+    X_early = (
+        np.stack([features_by_cycle[i] for i in range(1, lookback + 1)]).astype(np.float32)
+        if not missing_input_cycles
+        else np.empty((0, fixed_len, len(FEATURES)), dtype=np.float32)
+    )
+    record = BatteryRecord(
+        battery_id=battery_id,
+        cell_id=cell_id,
+        file_path=path,
+        X_early=X_early,
+        soh_current=float(soh_by_cycle[lookback]) if lookback in soh_by_cycle else float("nan"),
+        target_soh_by_horizon=target_soh_by_horizon,
+        features_by_cycle=features_by_cycle,
+        soh_by_cycle=soh_by_cycle,
+        available_cycles=sorted(soh_by_cycle),
+        reference_capacity=float(reference_capacity),
+    )
+    horizon_sample_counts = {
+        str(int(horizon)): count_horizon_samples(record, int(horizon), lookback, sample_mode)
+        for horizon in horizons
+    }
+    if sample_mode == SAMPLE_MODE_SLIDING_WINDOW:
+        manifest_item["available_horizons"] = [
+            int(horizon) for horizon in horizons if horizon_sample_counts[str(int(horizon))] > 0
+        ]
+        manifest_item["missing_horizons"] = [
+            int(horizon) for horizon in horizons if horizon_sample_counts[str(int(horizon))] == 0
+        ]
+    has_requested_samples = any(count > 0 for count in horizon_sample_counts.values())
+
+    if sample_mode == SAMPLE_MODE_FIRST_WINDOW and not first_window_available:
         reasons = []
         if missing_input_cycles:
             reasons.append(f"missing input cycles {missing_input_cycles}")
@@ -211,23 +263,26 @@ def load_matr_battery(
             }
         )
         return None, manifest_item
+    if sample_mode == SAMPLE_MODE_SLIDING_WINDOW and not has_requested_samples:
+        manifest_item.update(
+            {
+                "status": "skipped",
+                "reason": "no complete sliding-window samples for requested horizons",
+                "sample_counts_by_horizon": horizon_sample_counts,
+                "feature_errors": feature_errors[:5],
+                "soh_errors": soh_errors[:5],
+            }
+        )
+        return None, manifest_item
 
-    X_early = np.stack([features_by_cycle[i] for i in range(1, lookback + 1)]).astype(np.float32)
-    record = BatteryRecord(
-        battery_id=battery_id,
-        cell_id=cell_id,
-        file_path=path,
-        X_early=X_early,
-        soh_current=float(soh_by_cycle[lookback]),
-        target_soh_by_horizon=target_soh_by_horizon,
-        available_cycles=sorted(soh_by_cycle),
-        reference_capacity=float(reference_capacity),
-    )
     manifest_item.update(
         {
             "status": "used",
-            "soh_current_cycle_20": float(record.soh_current),
+            "sample_mode": sample_mode,
+            "soh_current_cycle": float(record.soh_current) if math.isfinite(record.soh_current) else None,
+            "soh_current_cycle_20": float(record.soh_current) if lookback == 20 and math.isfinite(record.soh_current) else None,
             "input_shape": list(X_early.shape),
+            "sample_counts_by_horizon": horizon_sample_counts,
             "feature_errors": feature_errors[:5],
             "soh_errors": soh_errors[:5],
         }
@@ -242,6 +297,7 @@ def load_dataset_manifest(
     lookback: int,
     horizons: Sequence[int],
     fixed_len: int,
+    sample_mode: str = SAMPLE_MODE_FIRST_WINDOW,
 ) -> tuple[list[BatteryRecord], dict[str, Any]]:
     records: list[BatteryRecord] = []
     battery_items = []
@@ -249,7 +305,13 @@ def load_dataset_manifest(
     duplicate_ids: list[str] = []
 
     for path in matr_files:
-        record, item = load_matr_battery(path, lookback=lookback, horizons=horizons, fixed_len=fixed_len)
+        record, item = load_matr_battery(
+            path,
+            lookback=lookback,
+            horizons=horizons,
+            fixed_len=fixed_len,
+            sample_mode=sample_mode,
+        )
         battery_items.append(item)
         if record is None:
             continue
@@ -265,8 +327,16 @@ def load_dataset_manifest(
             f"need at least 3 usable MATR batteries for 6:2:2 split; got {len(records)}"
         )
 
-    horizon_counts = {
-        str(horizon): int(sum(int(horizon) in record.target_soh_by_horizon for record in records))
+    horizon_sample_counts = {
+        str(horizon): int(
+            sum(count_horizon_samples(record, int(horizon), lookback, sample_mode) for record in records)
+        )
+        for horizon in horizons
+    }
+    horizon_battery_counts = {
+        str(horizon): int(
+            sum(count_horizon_samples(record, int(horizon), lookback, sample_mode) > 0 for record in records)
+        )
         for horizon in horizons
     }
     manifest = {
@@ -279,11 +349,13 @@ def load_dataset_manifest(
         "capacity_used_as_input": False,
         "features": FEATURES,
         "target": TARGET,
+        "sample_mode": sample_mode,
         "lookback_cycles": lookback,
         "horizons": [int(horizon) for horizon in horizons],
         "fixed_len": fixed_len,
         "n_usable_batteries": len(records),
-        "sample_counts_by_horizon": horizon_counts,
+        "sample_counts_by_horizon": horizon_sample_counts,
+        "battery_counts_by_horizon": horizon_battery_counts,
         "batteries": battery_items,
     }
     return records, manifest
@@ -332,6 +404,7 @@ def build_horizon_split(
     split_name: str,
     horizon: int,
     lookback: int,
+    sample_mode: str = SAMPLE_MODE_FIRST_WINDOW,
 ) -> HorizonSplit:
     X_list: list[np.ndarray] = []
     y_soh: list[float] = []
@@ -341,31 +414,47 @@ def build_horizon_split(
 
     for battery_id in battery_ids:
         record = records_by_id[battery_id]
-        if horizon not in record.target_soh_by_horizon:
-            continue
-        target_cycle = lookback + horizon
-        target_soh = float(record.target_soh_by_horizon[horizon])
-        delta = float(record.soh_current - target_soh)
-        X_list.append(record.X_early)
-        y_soh.append(target_soh)
-        y_delta.append(delta)
-        current_soh.append(float(record.soh_current))
-        meta.append(
-            {
-                "dataset": DATASET,
-                "split": split_name,
-                "battery_id": record.battery_id,
-                "cell_id": record.cell_id,
-                "file": record.file_path.name,
-                "input_start_cycle": 1,
-                "input_end_cycle": lookback,
-                "target_cycle": target_cycle,
-                "horizon": horizon,
-                "soh_current_cycle_20": float(record.soh_current),
-                "soh_target": target_soh,
-                "delta_soh_true": delta,
-            }
-        )
+        if sample_mode == SAMPLE_MODE_FIRST_WINDOW:
+            if horizon not in record.target_soh_by_horizon:
+                continue
+            windows = [(1, lookback, record.X_early, float(record.soh_current))]
+        elif sample_mode == SAMPLE_MODE_SLIDING_WINDOW:
+            windows = []
+            for end_cycle in valid_sliding_window_ends(record, horizon, lookback):
+                input_start = end_cycle - lookback + 1
+                X_window = np.stack(
+                    [record.features_by_cycle[i] for i in range(input_start, end_cycle + 1)]
+                ).astype(np.float32)
+                windows.append((input_start, end_cycle, X_window, float(record.soh_by_cycle[end_cycle])))
+        else:
+            raise ValueError(f"unknown sample mode: {sample_mode}")
+
+        for input_start, input_end, X_window, soh_current in windows:
+            target_cycle = input_end + horizon
+            target_soh = float(record.soh_by_cycle[target_cycle])
+            delta = float(soh_current - target_soh)
+            X_list.append(X_window)
+            y_soh.append(target_soh)
+            y_delta.append(delta)
+            current_soh.append(soh_current)
+            meta.append(
+                {
+                    "dataset": DATASET,
+                    "split": split_name,
+                    "sample_mode": sample_mode,
+                    "battery_id": record.battery_id,
+                    "cell_id": record.cell_id,
+                    "file": record.file_path.name,
+                    "input_start_cycle": input_start,
+                    "input_end_cycle": input_end,
+                    "target_cycle": target_cycle,
+                    "horizon": horizon,
+                    "soh_current_cycle": soh_current,
+                    "soh_current_cycle_20": soh_current if input_end == 20 else None,
+                    "soh_target": target_soh,
+                    "delta_soh_true": delta,
+                }
+            )
 
     if not X_list:
         return HorizonSplit(
@@ -390,26 +479,36 @@ def make_split_manifest(
     records_by_id: dict[str, BatteryRecord],
     horizons: Sequence[int],
     lookback: int,
+    sample_mode: str = SAMPLE_MODE_FIRST_WINDOW,
 ) -> dict[str, Any]:
     verify_no_split_overlap(split_ids)
     sample_counts: dict[str, dict[str, int]] = {}
+    battery_counts: dict[str, dict[str, int]] = {}
     unavailable: dict[str, dict[str, list[str]]] = {}
     for split_name, ids in split_ids.items():
         sample_counts[split_name] = {}
+        battery_counts[split_name] = {}
         unavailable[split_name] = {}
         for horizon in horizons:
             available_ids = [
                 battery_id
                 for battery_id in ids
-                if int(horizon) in records_by_id[battery_id].target_soh_by_horizon
+                if count_horizon_samples(records_by_id[battery_id], int(horizon), lookback, sample_mode) > 0
             ]
-            sample_counts[split_name][str(horizon)] = len(available_ids)
+            battery_counts[split_name][str(horizon)] = len(available_ids)
+            sample_counts[split_name][str(horizon)] = int(
+                sum(
+                    count_horizon_samples(records_by_id[battery_id], int(horizon), lookback, sample_mode)
+                    for battery_id in ids
+                )
+            )
             unavailable[split_name][str(horizon)] = sorted(set(ids) - set(available_ids))
 
     return {
         "dataset": DATASET,
         "seed": seed,
         "split_level": "battery",
+        "sample_mode": sample_mode,
         "ratio": {"train": 0.6, "validation": 0.2, "test": 0.2},
         "lookback_cycles": lookback,
         "horizons": [int(horizon) for horizon in horizons],
@@ -418,6 +517,7 @@ def make_split_manifest(
         "test_battery_ids": split_ids["test"],
         "counts": {split: len(ids) for split, ids in split_ids.items()},
         "sample_counts_by_split_horizon": sample_counts,
+        "battery_counts_by_split_horizon": battery_counts,
         "battery_ids_without_target_by_split_horizon": unavailable,
         "no_overlap_verified": True,
     }
@@ -633,9 +733,10 @@ This directory was produced by `scripts/run_matr_step7_validation_selection.py`.
 - Selection stage: {SELECTION_STAGE}
 - Test metrics used for selection: false
 - Lookback cycles: {config["lookback_cycles"]}
+- Sample mode: {config["sample_mode"]}
 - Horizons: {config["horizons"]}
 - Features: {FEATURES}
-- Target: delta_soh = SOH_20 - SOH_(20+h)
+- Target: delta_soh = SOH_input_end - SOH_(input_end+h)
 - Model selection: validation-only metric values; lowest average MAE across horizons,
   then lower average RMSE, lower average MAPE, lower MAE standard deviation, and
   higher average skill versus persistence
@@ -681,7 +782,7 @@ def evaluate_persistence(
             "selection_stage": SELECTION_STAGE,
             "seed": seed,
             "horizon": horizon,
-            "rule": "delta_soh_pred=0; soh_pred=soh_current_at_cycle_20",
+            "rule": "delta_soh_pred=0; soh_pred=soh_current_at_input_end_cycle",
             "metrics": {key: row[key] for key in METRIC_COLUMNS},
         },
     )
@@ -1050,8 +1151,6 @@ def run(args: argparse.Namespace) -> None:
     checkpoint_root = output_dir / "checkpoints"
     checkpoint_root.mkdir(parents=True, exist_ok=True)
 
-    if args.lookback != 20:
-        raise ValueError("Step 7 requires --lookback 20")
     horizons = [int(horizon) for horizon in args.horizons]
     seeds = [int(seed) for seed in args.seeds]
     models = [str(model).lower() for model in args.models]
@@ -1069,6 +1168,7 @@ def run(args: argparse.Namespace) -> None:
         lookback=args.lookback,
         horizons=horizons,
         fixed_len=args.fixed_len,
+        sample_mode=args.sample_mode,
     )
     records_by_id = {record.battery_id: record for record in records}
 
@@ -1083,6 +1183,7 @@ def run(args: argparse.Namespace) -> None:
         "models": models,
         "features": FEATURES,
         "target": TARGET,
+        "sample_mode": args.sample_mode,
         "target_scale": args.target_scale,
         "fixed_len": args.fixed_len,
         "batch_size": args.batch_size,
@@ -1121,19 +1222,20 @@ def run(args: argparse.Namespace) -> None:
             records_by_id=records_by_id,
             horizons=horizons,
             lookback=args.lookback,
+            sample_mode=args.sample_mode,
         )
         save_json(output_dir / f"split_manifest_seed{seed}.json", split_manifest)
         split_manifests.append(split_manifest)
 
         for horizon in horizons:
             train_split = build_horizon_split(
-                records_by_id, split_ids["train"], "train", horizon, args.lookback
+                records_by_id, split_ids["train"], "train", horizon, args.lookback, args.sample_mode
             )
             val_split = build_horizon_split(
-                records_by_id, split_ids["validation"], "validation", horizon, args.lookback
+                records_by_id, split_ids["validation"], "validation", horizon, args.lookback, args.sample_mode
             )
             test_split = build_horizon_split(
-                records_by_id, split_ids["test"], "test", horizon, args.lookback
+                records_by_id, split_ids["test"], "test", horizon, args.lookback, args.sample_mode
             )
             ensure_non_empty_split(train_split, "train", seed, horizon)
             ensure_non_empty_split(val_split, "validation", seed, horizon)
@@ -1147,9 +1249,9 @@ def run(args: argparse.Namespace) -> None:
                     "feature_order": FEATURES,
                     "mean": mean.reshape(-1).astype(float).tolist(),
                     "std": std.reshape(-1).astype(float).tolist(),
-                    "train_battery_ids": [item["battery_id"] for item in train_split.meta],
-                    "validation_battery_ids": [item["battery_id"] for item in val_split.meta],
-                    "test_battery_ids": [item["battery_id"] for item in test_split.meta],
+                    "train_battery_ids": sorted({item["battery_id"] for item in train_split.meta}),
+                    "validation_battery_ids": sorted({item["battery_id"] for item in val_split.meta}),
+                    "test_battery_ids": sorted({item["battery_id"] for item in test_split.meta}),
                     "n_train_samples": int(len(train_split.y_soh_target)),
                     "n_validation_samples": int(len(val_split.y_soh_target)),
                     "n_test_samples_manifest_only": int(len(test_split.y_soh_target)),
@@ -1217,6 +1319,7 @@ def run(args: argparse.Namespace) -> None:
         "horizons": horizons,
         "features": FEATURES,
         "target": TARGET,
+        "sample_mode": args.sample_mode,
         "target_scale": args.target_scale,
         "selection_rule": "lowest_avg_validation_MAE_then_RMSE_MAPE_stdMAE_skill",
         "rank_used_for_selection": False,
@@ -1248,6 +1351,16 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--data-root", required=True)
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--lookback", type=int, default=20)
+    parser.add_argument(
+        "--sample-mode",
+        choices=SAMPLE_MODES,
+        default=SAMPLE_MODE_FIRST_WINDOW,
+        help=(
+            "first-window uses cycles 1..lookback once per battery/horizon. "
+            "sliding-window keeps the battery-level split, then creates all "
+            "within-battery windows whose input end plus horizon has a target SOH."
+        ),
+    )
     parser.add_argument("--horizons", type=int, nargs="+", default=[10, 50, 100])
     parser.add_argument("--seeds", type=int, nargs="+", default=[42, 43, 44])
     parser.add_argument("--models", nargs="+", default=DEFAULT_MODELS)
