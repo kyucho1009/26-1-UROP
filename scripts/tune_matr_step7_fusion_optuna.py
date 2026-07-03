@@ -29,6 +29,8 @@ DEFAULT_TUNE_MODELS = [
     "cpmlp_cpdsconv_fusion",
 ]
 REFERENCE_MODELS = ["persistence", "cpmlp"]
+DEFAULT_SEARCH_REFERENCE_MODELS = ["persistence"]
+DEFAULT_CONFIRM_REFERENCE_MODELS = ["persistence", "cpmlp"]
 
 
 def parse_int_list(values: Sequence[str] | None, default: Sequence[int]) -> list[int]:
@@ -47,6 +49,16 @@ def parse_model_list(values: Sequence[str] | None, default: Sequence[str]) -> li
     for value in values:
         parsed.extend(item.strip() for item in str(value).split(",") if item.strip())
     return parsed
+
+
+def normalize_reference_models(values: Sequence[str] | None, default: Sequence[str]) -> list[str]:
+    models = parse_model_list(values, default)
+    normalized: list[str] = []
+    for model in ["persistence", *models]:
+        model = str(model).lower()
+        if model not in normalized:
+            normalized.append(model)
+    return normalized
 
 
 def slugify(value: str) -> str:
@@ -102,6 +114,14 @@ def suggest_config(trial: Any, args: argparse.Namespace) -> dict[str, Any]:
             "gru_hidden": 64,
             "dsconv_channels": 64,
         }
+    elif size == "xlarge":
+        defaults = {
+            "mlp_embed_dim": 128,
+            "gru_embed_dim": 64,
+            "model_hidden": 256,
+            "gru_hidden": 64,
+            "dsconv_channels": 128,
+        }
     else:
         raise ValueError(f"unknown size preset: {size}")
 
@@ -125,8 +145,10 @@ def build_step7_command(
     output_dir: Path,
     seeds: Sequence[int],
     horizons: Sequence[int],
+    reference_models: Sequence[str],
 ) -> list[str]:
-    models = REFERENCE_MODELS + [model]
+    models = [*normalize_reference_models(reference_models, DEFAULT_SEARCH_REFERENCE_MODELS), model]
+    models = list(dict.fromkeys(models))
     command = [
         sys.executable,
         str(args.step7_script),
@@ -196,7 +218,14 @@ def score_from_summary(summary: dict[str, Any], args: argparse.Namespace) -> flo
     rmse = float(summary.get("avg_RMSE_mean", 0.0))
     mape = float(summary.get("avg_MAPE_percent_mean", 0.0))
     std_mae = float(summary.get("std_MAE_mean", 0.0))
-    return mae + args.rmse_score_weight * rmse + args.mape_score_weight * (mape / 100.0) + args.std_score_weight * std_mae
+    worst_mae = float(summary.get("worst_MAE_mean", 0.0))
+    return (
+        mae
+        + args.rmse_score_weight * rmse
+        + args.mape_score_weight * (mape / 100.0)
+        + args.std_score_weight * std_mae
+        + args.worst_mae_score_weight * worst_mae
+    )
 
 
 def run_step7(
@@ -207,6 +236,7 @@ def run_step7(
     output_dir: Path,
     seeds: Sequence[int],
     horizons: Sequence[int],
+    reference_models: Sequence[str],
 ) -> dict[str, Any]:
     command = build_step7_command(
         args,
@@ -215,6 +245,7 @@ def run_step7(
         output_dir=output_dir,
         seeds=seeds,
         horizons=horizons,
+        reference_models=reference_models,
     )
     output_dir.mkdir(parents=True, exist_ok=True)
     save_json(
@@ -224,6 +255,7 @@ def run_step7(
             "target_scale": args.target_scale,
             "seeds": list(seeds),
             "horizons": list(horizons),
+            "reference_models": list(reference_models),
             "config": config,
             "command": command,
             "command_text": command_text(command),
@@ -314,6 +346,7 @@ def run_model_study(args: argparse.Namespace, model: str, search_seeds: list[int
             output_dir=trial_dir,
             seeds=search_seeds,
             horizons=search_horizons,
+            reference_models=args.search_reference_models,
         )
         score = score_from_summary(summary, args)
         payload = {"model": model, "score": score, **config, **summary}
@@ -350,6 +383,7 @@ def confirm_top_configs(
             output_dir=confirm_dir,
             seeds=confirm_seeds,
             horizons=confirm_horizons,
+            reference_models=args.confirm_reference_models,
         )
         score = score_from_summary(summary, args)
         row = {
@@ -414,6 +448,8 @@ This directory was produced by `scripts/tune_matr_step7_fusion_optuna.py`.
 - Test metrics used: false
 - Search trials per model: {args.n_trials}
 - Confirm top-k per model: {args.confirm_top_k}
+- Search reference models: {', '.join(args.search_reference_models)}
+- Confirm reference models: {', '.join(args.confirm_reference_models)}
 - Objective: validation `avg_MAE_mean` from the selected fusion model row.
 
 Each Optuna trial calls `scripts/run_matr_step7_validation_selection.py` with
@@ -440,8 +476,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--fixed-len", type=int, default=100)
     parser.add_argument("--search-horizons", nargs="+", default=["10", "50", "100"])
     parser.add_argument("--search-seeds", nargs="+", default=["42"])
+    parser.add_argument("--search-reference-models", nargs="+", default=DEFAULT_SEARCH_REFERENCE_MODELS)
     parser.add_argument("--confirm-horizons", nargs="+", default=["10", "50", "100"])
     parser.add_argument("--confirm-seeds", nargs="+", default=["42", "43", "44"])
+    parser.add_argument("--confirm-reference-models", nargs="+", default=DEFAULT_CONFIRM_REFERENCE_MODELS)
     parser.add_argument("--n-trials", type=int, default=30)
     parser.add_argument("--confirm-top-k", type=int, default=3)
     parser.add_argument("--device", default="cuda")
@@ -456,6 +494,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--rmse-score-weight", type=float, default=0.0)
     parser.add_argument("--mape-score-weight", type=float, default=0.0)
     parser.add_argument("--std-score-weight", type=float, default=0.0)
+    parser.add_argument("--worst-mae-score-weight", type=float, default=0.0)
     parser.add_argument("--lr-low", type=float, default=1e-4)
     parser.add_argument("--lr-high", type=float, default=8e-4)
     parser.add_argument("--weight-decay-low", type=float, default=1e-6)
@@ -473,8 +512,10 @@ def parse_args() -> argparse.Namespace:
         raise ValueError(f"unsupported tune model(s): {unknown}; allowed={DEFAULT_TUNE_MODELS}")
     args.search_horizons = parse_int_list(args.search_horizons, [10, 50, 100])
     args.search_seeds = parse_int_list(args.search_seeds, [42])
+    args.search_reference_models = normalize_reference_models(args.search_reference_models, DEFAULT_SEARCH_REFERENCE_MODELS)
     args.confirm_horizons = parse_int_list(args.confirm_horizons, [10, 50, 100])
     args.confirm_seeds = parse_int_list(args.confirm_seeds, [42, 43, 44])
+    args.confirm_reference_models = normalize_reference_models(args.confirm_reference_models, DEFAULT_CONFIRM_REFERENCE_MODELS)
     args.data_root = Path(args.data_root)
     args.step7_script = Path(args.step7_script)
     if args.target_scale <= 0:
@@ -493,8 +534,10 @@ def main() -> None:
             "sample_mode": args.sample_mode,
             "search_horizons": args.search_horizons,
             "search_seeds": args.search_seeds,
+            "search_reference_models": args.search_reference_models,
             "confirm_horizons": args.confirm_horizons,
             "confirm_seeds": args.confirm_seeds,
+            "confirm_reference_models": args.confirm_reference_models,
             "n_trials": args.n_trials,
             "confirm_top_k": args.confirm_top_k,
             "device": args.device,
@@ -506,6 +549,12 @@ def main() -> None:
                 "epochs": args.epochs_candidates,
                 "patience": args.patience_candidates,
                 "size_presets": args.size_presets,
+                "score_weights": {
+                    "rmse": args.rmse_score_weight,
+                    "mape": args.mape_score_weight,
+                    "std_mae": args.std_score_weight,
+                    "worst_mae": args.worst_mae_score_weight,
+                },
             },
         },
     )
@@ -539,6 +588,7 @@ def main() -> None:
                 output_dir=args.output_root / "dry_run" / model,
                 seeds=args.search_seeds,
                 horizons=args.search_horizons,
+                reference_models=args.search_reference_models,
             )
             all_search_rows.append({"model": model, "score": 0.0, **config, **summary})
         write_summary_artifacts(args, all_search_rows, all_confirm_rows)
