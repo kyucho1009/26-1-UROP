@@ -1,0 +1,6622 @@
+{
+  "dataset": "MATR",
+  "data_root": "MATR",
+  "total_pkl_files_found": 169,
+  "used_matr_pkl_files": [
+    "MATR_b1c0.pkl",
+    "MATR_b1c1.pkl",
+    "MATR_b1c11.pkl",
+    "MATR_b1c14.pkl",
+    "MATR_b1c15.pkl",
+    "MATR_b1c16.pkl",
+    "MATR_b1c17.pkl",
+    "MATR_b1c18.pkl",
+    "MATR_b1c19.pkl",
+    "MATR_b1c2.pkl",
+    "MATR_b1c20.pkl",
+    "MATR_b1c21.pkl",
+    "MATR_b1c23.pkl",
+    "MATR_b1c24.pkl",
+    "MATR_b1c25.pkl",
+    "MATR_b1c26.pkl",
+    "MATR_b1c27.pkl",
+    "MATR_b1c28.pkl",
+    "MATR_b1c29.pkl",
+    "MATR_b1c3.pkl",
+    "MATR_b1c30.pkl",
+    "MATR_b1c31.pkl",
+    "MATR_b1c32.pkl",
+    "MATR_b1c33.pkl",
+    "MATR_b1c34.pkl",
+    "MATR_b1c35.pkl",
+    "MATR_b1c36.pkl",
+    "MATR_b1c37.pkl",
+    "MATR_b1c38.pkl",
+    "MATR_b1c39.pkl",
+    "MATR_b1c4.pkl",
+    "MATR_b1c40.pkl",
+    "MATR_b1c41.pkl",
+    "MATR_b1c42.pkl",
+    "MATR_b1c43.pkl",
+    "MATR_b1c44.pkl",
+    "MATR_b1c45.pkl",
+    "MATR_b1c5.pkl",
+    "MATR_b1c6.pkl",
+    "MATR_b1c7.pkl",
+    "MATR_b1c9.pkl",
+    "MATR_b2c0.pkl",
+    "MATR_b2c1.pkl",
+    "MATR_b2c10.pkl",
+    "MATR_b2c11.pkl",
+    "MATR_b2c12.pkl",
+    "MATR_b2c13.pkl",
+    "MATR_b2c14.pkl",
+    "MATR_b2c17.pkl",
+    "MATR_b2c18.pkl",
+    "MATR_b2c19.pkl",
+    "MATR_b2c2.pkl",
+    "MATR_b2c20.pkl",
+    "MATR_b2c21.pkl",
+    "MATR_b2c22.pkl",
+    "MATR_b2c23.pkl",
+    "MATR_b2c24.pkl",
+    "MATR_b2c25.pkl",
+    "MATR_b2c26.pkl",
+    "MATR_b2c27.pkl",
+    "MATR_b2c28.pkl",
+    "MATR_b2c29.pkl",
+    "MATR_b2c3.pkl",
+    "MATR_b2c30.pkl",
+    "MATR_b2c31.pkl",
+    "MATR_b2c32.pkl",
+    "MATR_b2c33.pkl",
+    "MATR_b2c34.pkl",
+    "MATR_b2c35.pkl",
+    "MATR_b2c36.pkl",
+    "MATR_b2c37.pkl",
+    "MATR_b2c38.pkl",
+    "MATR_b2c39.pkl",
+    "MATR_b2c4.pkl",
+    "MATR_b2c40.pkl",
+    "MATR_b2c41.pkl",
+    "MATR_b2c42.pkl",
+    "MATR_b2c43.pkl",
+    "MATR_b2c44.pkl",
+    "MATR_b2c45.pkl",
+    "MATR_b2c46.pkl",
+    "MATR_b2c47.pkl",
+    "MATR_b2c5.pkl",
+    "MATR_b2c6.pkl",
+    "MATR_b3c0.pkl",
+    "MATR_b3c1.pkl",
+    "MATR_b3c10.pkl",
+    "MATR_b3c11.pkl",
+    "MATR_b3c12.pkl",
+    "MATR_b3c13.pkl",
+    "MATR_b3c14.pkl",
+    "MATR_b3c15.pkl",
+    "MATR_b3c16.pkl",
+    "MATR_b3c17.pkl",
+    "MATR_b3c18.pkl",
+    "MATR_b3c19.pkl",
+    "MATR_b3c20.pkl",
+    "MATR_b3c21.pkl",
+    "MATR_b3c22.pkl",
+    "MATR_b3c24.pkl",
+    "MATR_b3c25.pkl",
+    "MATR_b3c26.pkl",
+    "MATR_b3c27.pkl",
+    "MATR_b3c28.pkl",
+    "MATR_b3c29.pkl",
+    "MATR_b3c3.pkl",
+    "MATR_b3c30.pkl",
+    "MATR_b3c31.pkl",
+    "MATR_b3c33.pkl",
+    "MATR_b3c34.pkl",
+    "MATR_b3c35.pkl",
+    "MATR_b3c36.pkl",
+    "MATR_b3c38.pkl",
+    "MATR_b3c39.pkl",
+    "MATR_b3c4.pkl",
+    "MATR_b3c40.pkl",
+    "MATR_b3c41.pkl",
+    "MATR_b3c44.pkl",
+    "MATR_b3c45.pkl",
+    "MATR_b3c5.pkl",
+    "MATR_b3c6.pkl",
+    "MATR_b3c7.pkl",
+    "MATR_b3c8.pkl",
+    "MATR_b3c9.pkl",
+    "MATR_b4c0.pkl",
+    "MATR_b4c1.pkl",
+    "MATR_b4c10.pkl",
+    "MATR_b4c11.pkl",
+    "MATR_b4c12.pkl",
+    "MATR_b4c13.pkl",
+    "MATR_b4c14.pkl",
+    "MATR_b4c15.pkl",
+    "MATR_b4c16.pkl",
+    "MATR_b4c17.pkl",
+    "MATR_b4c18.pkl",
+    "MATR_b4c19.pkl",
+    "MATR_b4c2.pkl",
+    "MATR_b4c20.pkl",
+    "MATR_b4c21.pkl",
+    "MATR_b4c22.pkl",
+    "MATR_b4c23.pkl",
+    "MATR_b4c24.pkl",
+    "MATR_b4c25.pkl",
+    "MATR_b4c26.pkl",
+    "MATR_b4c27.pkl",
+    "MATR_b4c28.pkl",
+    "MATR_b4c29.pkl",
+    "MATR_b4c3.pkl",
+    "MATR_b4c30.pkl",
+    "MATR_b4c31.pkl",
+    "MATR_b4c32.pkl",
+    "MATR_b4c33.pkl",
+    "MATR_b4c34.pkl",
+    "MATR_b4c35.pkl",
+    "MATR_b4c36.pkl",
+    "MATR_b4c37.pkl",
+    "MATR_b4c38.pkl",
+    "MATR_b4c39.pkl",
+    "MATR_b4c4.pkl",
+    "MATR_b4c40.pkl",
+    "MATR_b4c41.pkl",
+    "MATR_b4c42.pkl",
+    "MATR_b4c43.pkl",
+    "MATR_b4c44.pkl",
+    "MATR_b4c5.pkl",
+    "MATR_b4c6.pkl",
+    "MATR_b4c7.pkl",
+    "MATR_b4c8.pkl",
+    "MATR_b4c9.pkl"
+  ],
+  "excluded_non_matr_pkl_count": 0,
+  "excluded_non_matr_pkl_examples": [],
+  "capacity_used_as_input": false,
+  "features": [
+    "current",
+    "voltage",
+    "dV"
+  ],
+  "target": "delta_soh",
+  "lookback_cycles": 10,
+  "horizons": [
+    10,
+    50,
+    100
+  ],
+  "fixed_len": 100,
+  "n_usable_batteries": 169,
+  "sample_counts_by_horizon": {
+    "10": 169,
+    "50": 169,
+    "100": 169
+  },
+  "batteries": [
+    {
+      "battery_id": "MATR_b1c0",
+      "cell_id": "MATR_b1c0",
+      "file": "MATR_b1c0.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1849,
+      "n_soh_cycles": 1849,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1849,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9770739674568176,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c1",
+      "cell_id": "MATR_b1c1",
+      "file": "MATR_b1c1.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 2158,
+      "n_soh_cycles": 2158,
+      "available_cycle_min": 1,
+      "available_cycle_max": 2158,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9818320870399475,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c11",
+      "cell_id": "MATR_b1c11",
+      "file": "MATR_b1c11.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 786,
+      "n_soh_cycles": 786,
+      "available_cycle_min": 1,
+      "available_cycle_max": 786,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9620146155357361,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c14",
+      "cell_id": "MATR_b1c14",
+      "file": "MATR_b1c14.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 878,
+      "n_soh_cycles": 878,
+      "available_cycle_min": 1,
+      "available_cycle_max": 878,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9776788353919983,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c15",
+      "cell_id": "MATR_b1c15",
+      "file": "MATR_b1c15.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 717,
+      "n_soh_cycles": 717,
+      "available_cycle_min": 1,
+      "available_cycle_max": 717,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9698670506477356,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c16",
+      "cell_id": "MATR_b1c16",
+      "file": "MATR_b1c16.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 860,
+      "n_soh_cycles": 860,
+      "available_cycle_min": 1,
+      "available_cycle_max": 860,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9872696399688721,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c17",
+      "cell_id": "MATR_b1c17",
+      "file": "MATR_b1c17.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 855,
+      "n_soh_cycles": 855,
+      "available_cycle_min": 1,
+      "available_cycle_max": 855,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9770399928092957,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c18",
+      "cell_id": "MATR_b1c18",
+      "file": "MATR_b1c18.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 688,
+      "n_soh_cycles": 688,
+      "available_cycle_min": 1,
+      "available_cycle_max": 688,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.971249520778656,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c19",
+      "cell_id": "MATR_b1c19",
+      "file": "MATR_b1c19.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 786,
+      "n_soh_cycles": 786,
+      "available_cycle_min": 1,
+      "available_cycle_max": 786,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9886695742607117,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c2",
+      "cell_id": "MATR_b1c2",
+      "file": "MATR_b1c2.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 2235,
+      "n_soh_cycles": 2235,
+      "available_cycle_min": 1,
+      "available_cycle_max": 2235,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9854170083999634,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c20",
+      "cell_id": "MATR_b1c20",
+      "file": "MATR_b1c20.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 532,
+      "n_soh_cycles": 532,
+      "available_cycle_min": 1,
+      "available_cycle_max": 532,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9778884053230286,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c21",
+      "cell_id": "MATR_b1c21",
+      "file": "MATR_b1c21.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 557,
+      "n_soh_cycles": 557,
+      "available_cycle_min": 1,
+      "available_cycle_max": 557,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9870887398719788,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c23",
+      "cell_id": "MATR_b1c23",
+      "file": "MATR_b1c23.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1012,
+      "n_soh_cycles": 1012,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1012,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9843710064888,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c24",
+      "cell_id": "MATR_b1c24",
+      "file": "MATR_b1c24.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1015,
+      "n_soh_cycles": 1015,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1015,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9799254536628723,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c25",
+      "cell_id": "MATR_b1c25",
+      "file": "MATR_b1c25.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 852,
+      "n_soh_cycles": 852,
+      "available_cycle_min": 1,
+      "available_cycle_max": 852,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9805436134338379,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c26",
+      "cell_id": "MATR_b1c26",
+      "file": "MATR_b1c26.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 868,
+      "n_soh_cycles": 868,
+      "available_cycle_min": 1,
+      "available_cycle_max": 868,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9919536113739014,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c27",
+      "cell_id": "MATR_b1c27",
+      "file": "MATR_b1c27.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 840,
+      "n_soh_cycles": 840,
+      "available_cycle_min": 1,
+      "available_cycle_max": 840,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9840026497840881,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c28",
+      "cell_id": "MATR_b1c28",
+      "file": "MATR_b1c28.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 858,
+      "n_soh_cycles": 858,
+      "available_cycle_min": 1,
+      "available_cycle_max": 858,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9827383756637573,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c29",
+      "cell_id": "MATR_b1c29",
+      "file": "MATR_b1c29.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 915,
+      "n_soh_cycles": 915,
+      "available_cycle_min": 1,
+      "available_cycle_max": 915,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9844339489936829,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c3",
+      "cell_id": "MATR_b1c3",
+      "file": "MATR_b1c3.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1432,
+      "n_soh_cycles": 1432,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1432,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9857491850852966,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c30",
+      "cell_id": "MATR_b1c30",
+      "file": "MATR_b1c30.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 707,
+      "n_soh_cycles": 707,
+      "available_cycle_min": 1,
+      "available_cycle_max": 707,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9849817752838135,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c31",
+      "cell_id": "MATR_b1c31",
+      "file": "MATR_b1c31.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 874,
+      "n_soh_cycles": 874,
+      "available_cycle_min": 1,
+      "available_cycle_max": 874,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9983963966369629,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c32",
+      "cell_id": "MATR_b1c32",
+      "file": "MATR_b1c32.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 729,
+      "n_soh_cycles": 729,
+      "available_cycle_min": 1,
+      "available_cycle_max": 729,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9828453660011292,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c33",
+      "cell_id": "MATR_b1c33",
+      "file": "MATR_b1c33.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 755,
+      "n_soh_cycles": 755,
+      "available_cycle_min": 1,
+      "available_cycle_max": 755,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9965922236442566,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c34",
+      "cell_id": "MATR_b1c34",
+      "file": "MATR_b1c34.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 740,
+      "n_soh_cycles": 740,
+      "available_cycle_min": 1,
+      "available_cycle_max": 740,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9817735552787781,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c35",
+      "cell_id": "MATR_b1c35",
+      "file": "MATR_b1c35.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 701,
+      "n_soh_cycles": 701,
+      "available_cycle_min": 1,
+      "available_cycle_max": 701,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9765912890434265,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c36",
+      "cell_id": "MATR_b1c36",
+      "file": "MATR_b1c36.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 702,
+      "n_soh_cycles": 702,
+      "available_cycle_min": 1,
+      "available_cycle_max": 702,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9833263158798218,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c37",
+      "cell_id": "MATR_b1c37",
+      "file": "MATR_b1c37.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 646,
+      "n_soh_cycles": 646,
+      "available_cycle_min": 1,
+      "available_cycle_max": 646,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9803892970085144,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c38",
+      "cell_id": "MATR_b1c38",
+      "file": "MATR_b1c38.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 615,
+      "n_soh_cycles": 615,
+      "available_cycle_min": 1,
+      "available_cycle_max": 615,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9784102439880371,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c39",
+      "cell_id": "MATR_b1c39",
+      "file": "MATR_b1c39.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 623,
+      "n_soh_cycles": 623,
+      "available_cycle_min": 1,
+      "available_cycle_max": 623,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9870175719261169,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c4",
+      "cell_id": "MATR_b1c4",
+      "file": "MATR_b1c4.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1707,
+      "n_soh_cycles": 1707,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1707,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9836215972900391,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c40",
+      "cell_id": "MATR_b1c40",
+      "file": "MATR_b1c40.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 964,
+      "n_soh_cycles": 964,
+      "available_cycle_min": 1,
+      "available_cycle_max": 964,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9883789420127869,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c41",
+      "cell_id": "MATR_b1c41",
+      "file": "MATR_b1c41.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1049,
+      "n_soh_cycles": 1049,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1049,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9844934940338135,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c42",
+      "cell_id": "MATR_b1c42",
+      "file": "MATR_b1c42.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 700,
+      "n_soh_cycles": 700,
+      "available_cycle_min": 1,
+      "available_cycle_max": 700,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9852861166000366,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c43",
+      "cell_id": "MATR_b1c43",
+      "file": "MATR_b1c43.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 649,
+      "n_soh_cycles": 649,
+      "available_cycle_min": 1,
+      "available_cycle_max": 649,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9741028547286987,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c44",
+      "cell_id": "MATR_b1c44",
+      "file": "MATR_b1c44.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 614,
+      "n_soh_cycles": 614,
+      "available_cycle_min": 1,
+      "available_cycle_max": 614,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9893531203269958,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c45",
+      "cell_id": "MATR_b1c45",
+      "file": "MATR_b1c45.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 597,
+      "n_soh_cycles": 597,
+      "available_cycle_min": 1,
+      "available_cycle_max": 597,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9887325763702393,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c5",
+      "cell_id": "MATR_b1c5",
+      "file": "MATR_b1c5.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1072,
+      "n_soh_cycles": 1072,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1072,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9821410179138184,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c6",
+      "cell_id": "MATR_b1c6",
+      "file": "MATR_b1c6.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 634,
+      "n_soh_cycles": 634,
+      "available_cycle_min": 1,
+      "available_cycle_max": 634,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9830096364021301,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c7",
+      "cell_id": "MATR_b1c7",
+      "file": "MATR_b1c7.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 868,
+      "n_soh_cycles": 868,
+      "available_cycle_min": 1,
+      "available_cycle_max": 868,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9980411529541016,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b1c9",
+      "cell_id": "MATR_b1c9",
+      "file": "MATR_b1c9.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1052,
+      "n_soh_cycles": 1052,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1052,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9879990816116333,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c0",
+      "cell_id": "MATR_b2c0",
+      "file": "MATR_b2c0.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 325,
+      "n_soh_cycles": 325,
+      "available_cycle_min": 1,
+      "available_cycle_max": 325,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9745965003967285,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c1",
+      "cell_id": "MATR_b2c1",
+      "file": "MATR_b2c1.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 169,
+      "n_soh_cycles": 169,
+      "available_cycle_min": 1,
+      "available_cycle_max": 169,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9692316651344299,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c10",
+      "cell_id": "MATR_b2c10",
+      "file": "MATR_b2c10.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 595,
+      "n_soh_cycles": 595,
+      "available_cycle_min": 1,
+      "available_cycle_max": 595,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9756104350090027,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c11",
+      "cell_id": "MATR_b2c11",
+      "file": "MATR_b2c11.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 504,
+      "n_soh_cycles": 504,
+      "available_cycle_min": 1,
+      "available_cycle_max": 504,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9773092865943909,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c12",
+      "cell_id": "MATR_b2c12",
+      "file": "MATR_b2c12.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 489,
+      "n_soh_cycles": 489,
+      "available_cycle_min": 1,
+      "available_cycle_max": 489,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9764867424964905,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c13",
+      "cell_id": "MATR_b2c13",
+      "file": "MATR_b2c13.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 519,
+      "n_soh_cycles": 519,
+      "available_cycle_min": 1,
+      "available_cycle_max": 519,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9845520853996277,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c14",
+      "cell_id": "MATR_b2c14",
+      "file": "MATR_b2c14.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 508,
+      "n_soh_cycles": 508,
+      "available_cycle_min": 1,
+      "available_cycle_max": 508,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9833983778953552,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c17",
+      "cell_id": "MATR_b2c17",
+      "file": "MATR_b2c17.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 524,
+      "n_soh_cycles": 524,
+      "available_cycle_min": 1,
+      "available_cycle_max": 524,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9750970602035522,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c18",
+      "cell_id": "MATR_b2c18",
+      "file": "MATR_b2c18.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 522,
+      "n_soh_cycles": 522,
+      "available_cycle_min": 1,
+      "available_cycle_max": 522,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.969005823135376,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c19",
+      "cell_id": "MATR_b2c19",
+      "file": "MATR_b2c19.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 488,
+      "n_soh_cycles": 488,
+      "available_cycle_min": 1,
+      "available_cycle_max": 488,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9533717036247253,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c2",
+      "cell_id": "MATR_b2c2",
+      "file": "MATR_b2c2.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 463,
+      "n_soh_cycles": 463,
+      "available_cycle_min": 1,
+      "available_cycle_max": 463,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9793798327445984,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c20",
+      "cell_id": "MATR_b2c20",
+      "file": "MATR_b2c20.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 530,
+      "n_soh_cycles": 530,
+      "available_cycle_min": 1,
+      "available_cycle_max": 530,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9883759021759033,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c21",
+      "cell_id": "MATR_b2c21",
+      "file": "MATR_b2c21.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 519,
+      "n_soh_cycles": 519,
+      "available_cycle_min": 1,
+      "available_cycle_max": 519,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9827786087989807,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c22",
+      "cell_id": "MATR_b2c22",
+      "file": "MATR_b2c22.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 539,
+      "n_soh_cycles": 539,
+      "available_cycle_min": 1,
+      "available_cycle_max": 539,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9853785634040833,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c23",
+      "cell_id": "MATR_b2c23",
+      "file": "MATR_b2c23.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 561,
+      "n_soh_cycles": 561,
+      "available_cycle_min": 1,
+      "available_cycle_max": 561,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9797553420066833,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c24",
+      "cell_id": "MATR_b2c24",
+      "file": "MATR_b2c24.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 523,
+      "n_soh_cycles": 523,
+      "available_cycle_min": 1,
+      "available_cycle_max": 523,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9739621877670288,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c25",
+      "cell_id": "MATR_b2c25",
+      "file": "MATR_b2c25.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 486,
+      "n_soh_cycles": 486,
+      "available_cycle_min": 1,
+      "available_cycle_max": 486,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9736664295196533,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c26",
+      "cell_id": "MATR_b2c26",
+      "file": "MATR_b2c26.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 497,
+      "n_soh_cycles": 497,
+      "available_cycle_min": 1,
+      "available_cycle_max": 497,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9830151796340942,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c27",
+      "cell_id": "MATR_b2c27",
+      "file": "MATR_b2c27.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 494,
+      "n_soh_cycles": 494,
+      "available_cycle_min": 1,
+      "available_cycle_max": 494,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9726194739341736,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c28",
+      "cell_id": "MATR_b2c28",
+      "file": "MATR_b2c28.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 540,
+      "n_soh_cycles": 540,
+      "available_cycle_min": 1,
+      "available_cycle_max": 540,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9777922630310059,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c29",
+      "cell_id": "MATR_b2c29",
+      "file": "MATR_b2c29.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 521,
+      "n_soh_cycles": 521,
+      "available_cycle_min": 1,
+      "available_cycle_max": 521,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9782024621963501,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c3",
+      "cell_id": "MATR_b2c3",
+      "file": "MATR_b2c3.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 360,
+      "n_soh_cycles": 360,
+      "available_cycle_min": 1,
+      "available_cycle_max": 360,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.971023678779602,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c30",
+      "cell_id": "MATR_b2c30",
+      "file": "MATR_b2c30.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 506,
+      "n_soh_cycles": 506,
+      "available_cycle_min": 1,
+      "available_cycle_max": 506,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9737152457237244,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c31",
+      "cell_id": "MATR_b2c31",
+      "file": "MATR_b2c31.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 518,
+      "n_soh_cycles": 518,
+      "available_cycle_min": 1,
+      "available_cycle_max": 518,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9802538752555847,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c32",
+      "cell_id": "MATR_b2c32",
+      "file": "MATR_b2c32.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 543,
+      "n_soh_cycles": 543,
+      "available_cycle_min": 1,
+      "available_cycle_max": 543,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9803525805473328,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c33",
+      "cell_id": "MATR_b2c33",
+      "file": "MATR_b2c33.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 545,
+      "n_soh_cycles": 545,
+      "available_cycle_min": 1,
+      "available_cycle_max": 545,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.984673261642456,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c34",
+      "cell_id": "MATR_b2c34",
+      "file": "MATR_b2c34.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 525,
+      "n_soh_cycles": 525,
+      "available_cycle_min": 1,
+      "available_cycle_max": 525,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.976037859916687,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c35",
+      "cell_id": "MATR_b2c35",
+      "file": "MATR_b2c35.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 485,
+      "n_soh_cycles": 485,
+      "available_cycle_min": 1,
+      "available_cycle_max": 485,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9754197001457214,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c36",
+      "cell_id": "MATR_b2c36",
+      "file": "MATR_b2c36.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 559,
+      "n_soh_cycles": 559,
+      "available_cycle_min": 1,
+      "available_cycle_max": 559,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9851908683776855,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c37",
+      "cell_id": "MATR_b2c37",
+      "file": "MATR_b2c37.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 501,
+      "n_soh_cycles": 501,
+      "available_cycle_min": 1,
+      "available_cycle_max": 501,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9806785583496094,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c38",
+      "cell_id": "MATR_b2c38",
+      "file": "MATR_b2c38.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 486,
+      "n_soh_cycles": 486,
+      "available_cycle_min": 1,
+      "available_cycle_max": 486,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9762557744979858,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c39",
+      "cell_id": "MATR_b2c39",
+      "file": "MATR_b2c39.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 479,
+      "n_soh_cycles": 479,
+      "available_cycle_min": 1,
+      "available_cycle_max": 479,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9855944514274597,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c4",
+      "cell_id": "MATR_b2c4",
+      "file": "MATR_b2c4.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 470,
+      "n_soh_cycles": 470,
+      "available_cycle_min": 1,
+      "available_cycle_max": 470,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9775499701499939,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c40",
+      "cell_id": "MATR_b2c40",
+      "file": "MATR_b2c40.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 529,
+      "n_soh_cycles": 529,
+      "available_cycle_min": 1,
+      "available_cycle_max": 529,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9828706979751587,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c41",
+      "cell_id": "MATR_b2c41",
+      "file": "MATR_b2c41.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 451,
+      "n_soh_cycles": 451,
+      "available_cycle_min": 1,
+      "available_cycle_max": 451,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9756142497062683,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c42",
+      "cell_id": "MATR_b2c42",
+      "file": "MATR_b2c42.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 491,
+      "n_soh_cycles": 491,
+      "available_cycle_min": 1,
+      "available_cycle_max": 491,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9835701584815979,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c43",
+      "cell_id": "MATR_b2c43",
+      "file": "MATR_b2c43.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 486,
+      "n_soh_cycles": 486,
+      "available_cycle_min": 1,
+      "available_cycle_max": 486,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9803823828697205,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c44",
+      "cell_id": "MATR_b2c44",
+      "file": "MATR_b2c44.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 477,
+      "n_soh_cycles": 477,
+      "available_cycle_min": 1,
+      "available_cycle_max": 477,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9771100878715515,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c45",
+      "cell_id": "MATR_b2c45",
+      "file": "MATR_b2c45.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 513,
+      "n_soh_cycles": 513,
+      "available_cycle_min": 1,
+      "available_cycle_max": 513,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9766315221786499,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c46",
+      "cell_id": "MATR_b2c46",
+      "file": "MATR_b2c46.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 448,
+      "n_soh_cycles": 448,
+      "available_cycle_min": 1,
+      "available_cycle_max": 448,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9796237945556641,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c47",
+      "cell_id": "MATR_b2c47",
+      "file": "MATR_b2c47.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 744,
+      "n_soh_cycles": 744,
+      "available_cycle_min": 1,
+      "available_cycle_max": 744,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9535289406776428,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c5",
+      "cell_id": "MATR_b2c5",
+      "file": "MATR_b2c5.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 506,
+      "n_soh_cycles": 506,
+      "available_cycle_min": 1,
+      "available_cycle_max": 506,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9741193652153015,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b2c6",
+      "cell_id": "MATR_b2c6",
+      "file": "MATR_b2c6.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 544,
+      "n_soh_cycles": 544,
+      "available_cycle_min": 1,
+      "available_cycle_max": 544,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9747211337089539,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c0",
+      "cell_id": "MATR_b3c0",
+      "file": "MATR_b3c0.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1007,
+      "n_soh_cycles": 1007,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1007,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9731294512748718,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c1",
+      "cell_id": "MATR_b3c1",
+      "file": "MATR_b3c1.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1061,
+      "n_soh_cycles": 1061,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1061,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9712070822715759,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c10",
+      "cell_id": "MATR_b3c10",
+      "file": "MATR_b3c10.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1076,
+      "n_soh_cycles": 1076,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1076,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9675309658050537,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c11",
+      "cell_id": "MATR_b3c11",
+      "file": "MATR_b3c11.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 815,
+      "n_soh_cycles": 815,
+      "available_cycle_min": 1,
+      "available_cycle_max": 815,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9733284115791321,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c12",
+      "cell_id": "MATR_b3c12",
+      "file": "MATR_b3c12.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 930,
+      "n_soh_cycles": 930,
+      "available_cycle_min": 1,
+      "available_cycle_max": 930,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9786665439605713,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c13",
+      "cell_id": "MATR_b3c13",
+      "file": "MATR_b3c13.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 814,
+      "n_soh_cycles": 814,
+      "available_cycle_min": 1,
+      "available_cycle_max": 814,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9718686938285828,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c14",
+      "cell_id": "MATR_b3c14",
+      "file": "MATR_b3c14.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 856,
+      "n_soh_cycles": 856,
+      "available_cycle_min": 1,
+      "available_cycle_max": 856,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9787236452102661,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c15",
+      "cell_id": "MATR_b3c15",
+      "file": "MATR_b3c15.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 874,
+      "n_soh_cycles": 874,
+      "available_cycle_min": 1,
+      "available_cycle_max": 874,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9736382961273193,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c16",
+      "cell_id": "MATR_b3c16",
+      "file": "MATR_b3c16.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1636,
+      "n_soh_cycles": 1636,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1636,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9669888019561768,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c17",
+      "cell_id": "MATR_b3c17",
+      "file": "MATR_b3c17.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1313,
+      "n_soh_cycles": 1313,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1313,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9717745780944824,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c18",
+      "cell_id": "MATR_b3c18",
+      "file": "MATR_b3c18.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1144,
+      "n_soh_cycles": 1144,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1144,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9728136658668518,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c19",
+      "cell_id": "MATR_b3c19",
+      "file": "MATR_b3c19.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1153,
+      "n_soh_cycles": 1153,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1153,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9762083292007446,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c20",
+      "cell_id": "MATR_b3c20",
+      "file": "MATR_b3c20.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 811,
+      "n_soh_cycles": 811,
+      "available_cycle_min": 1,
+      "available_cycle_max": 811,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.970548689365387,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c21",
+      "cell_id": "MATR_b3c21",
+      "file": "MATR_b3c21.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 770,
+      "n_soh_cycles": 770,
+      "available_cycle_min": 1,
+      "available_cycle_max": 770,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9714226126670837,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c22",
+      "cell_id": "MATR_b3c22",
+      "file": "MATR_b3c22.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1000,
+      "n_soh_cycles": 1000,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1000,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9623698592185974,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c24",
+      "cell_id": "MATR_b3c24",
+      "file": "MATR_b3c24.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 823,
+      "n_soh_cycles": 823,
+      "available_cycle_min": 1,
+      "available_cycle_max": 823,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9546012282371521,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c25",
+      "cell_id": "MATR_b3c25",
+      "file": "MATR_b3c25.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 987,
+      "n_soh_cycles": 987,
+      "available_cycle_min": 1,
+      "available_cycle_max": 987,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9675326943397522,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c26",
+      "cell_id": "MATR_b3c26",
+      "file": "MATR_b3c26.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1026,
+      "n_soh_cycles": 1026,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1026,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9774045348167419,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c27",
+      "cell_id": "MATR_b3c27",
+      "file": "MATR_b3c27.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 848,
+      "n_soh_cycles": 848,
+      "available_cycle_min": 1,
+      "available_cycle_max": 848,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.967200517654419,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c28",
+      "cell_id": "MATR_b3c28",
+      "file": "MATR_b3c28.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 539,
+      "n_soh_cycles": 539,
+      "available_cycle_min": 1,
+      "available_cycle_max": 539,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9566940665245056,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c29",
+      "cell_id": "MATR_b3c29",
+      "file": "MATR_b3c29.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 856,
+      "n_soh_cycles": 856,
+      "available_cycle_min": 1,
+      "available_cycle_max": 856,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9728185534477234,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c3",
+      "cell_id": "MATR_b3c3",
+      "file": "MATR_b3c3.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1113,
+      "n_soh_cycles": 1113,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1113,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9681422114372253,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c30",
+      "cell_id": "MATR_b3c30",
+      "file": "MATR_b3c30.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 933,
+      "n_soh_cycles": 933,
+      "available_cycle_min": 1,
+      "available_cycle_max": 933,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9743170142173767,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c31",
+      "cell_id": "MATR_b3c31",
+      "file": "MATR_b3c31.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 729,
+      "n_soh_cycles": 729,
+      "available_cycle_min": 1,
+      "available_cycle_max": 729,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9735918641090393,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c33",
+      "cell_id": "MATR_b3c33",
+      "file": "MATR_b3c33.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1282,
+      "n_soh_cycles": 1282,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1282,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9659863114356995,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c34",
+      "cell_id": "MATR_b3c34",
+      "file": "MATR_b3c34.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1156,
+      "n_soh_cycles": 1156,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1156,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9673475027084351,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c35",
+      "cell_id": "MATR_b3c35",
+      "file": "MATR_b3c35.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1091,
+      "n_soh_cycles": 1091,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1091,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9684514999389648,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c36",
+      "cell_id": "MATR_b3c36",
+      "file": "MATR_b3c36.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 921,
+      "n_soh_cycles": 921,
+      "available_cycle_min": 1,
+      "available_cycle_max": 921,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9637163877487183,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c38",
+      "cell_id": "MATR_b3c38",
+      "file": "MATR_b3c38.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1933,
+      "n_soh_cycles": 1933,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1933,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.974758505821228,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c39",
+      "cell_id": "MATR_b3c39",
+      "file": "MATR_b3c39.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1154,
+      "n_soh_cycles": 1154,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1154,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9550071358680725,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c4",
+      "cell_id": "MATR_b3c4",
+      "file": "MATR_b3c4.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1046,
+      "n_soh_cycles": 1046,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1046,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9768509864807129,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c40",
+      "cell_id": "MATR_b3c40",
+      "file": "MATR_b3c40.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 794,
+      "n_soh_cycles": 794,
+      "available_cycle_min": 1,
+      "available_cycle_max": 794,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9665922522544861,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c41",
+      "cell_id": "MATR_b3c41",
+      "file": "MATR_b3c41.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 784,
+      "n_soh_cycles": 784,
+      "available_cycle_min": 1,
+      "available_cycle_max": 784,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9579960703849792,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c44",
+      "cell_id": "MATR_b3c44",
+      "file": "MATR_b3c44.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 938,
+      "n_soh_cycles": 938,
+      "available_cycle_min": 1,
+      "available_cycle_max": 938,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9753770232200623,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c45",
+      "cell_id": "MATR_b3c45",
+      "file": "MATR_b3c45.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1799,
+      "n_soh_cycles": 1799,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1799,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.973849356174469,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c5",
+      "cell_id": "MATR_b3c5",
+      "file": "MATR_b3c5.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 826,
+      "n_soh_cycles": 826,
+      "available_cycle_min": 1,
+      "available_cycle_max": 826,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9579959511756897,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c6",
+      "cell_id": "MATR_b3c6",
+      "file": "MATR_b3c6.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 665,
+      "n_soh_cycles": 665,
+      "available_cycle_min": 1,
+      "available_cycle_max": 665,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9657288193702698,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c7",
+      "cell_id": "MATR_b3c7",
+      "file": "MATR_b3c7.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1834,
+      "n_soh_cycles": 1834,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1834,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9730666279792786,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c8",
+      "cell_id": "MATR_b3c8",
+      "file": "MATR_b3c8.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 826,
+      "n_soh_cycles": 826,
+      "available_cycle_min": 1,
+      "available_cycle_max": 826,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9709221720695496,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b3c9",
+      "cell_id": "MATR_b3c9",
+      "file": "MATR_b3c9.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1037,
+      "n_soh_cycles": 1037,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1037,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9753797054290771,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c0",
+      "cell_id": "MATR_b4c0",
+      "file": "MATR_b4c0.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 982,
+      "n_soh_cycles": 982,
+      "available_cycle_min": 1,
+      "available_cycle_max": 982,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9476543068885803,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c1",
+      "cell_id": "MATR_b4c1",
+      "file": "MATR_b4c1.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 861,
+      "n_soh_cycles": 861,
+      "available_cycle_min": 1,
+      "available_cycle_max": 861,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9546725153923035,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c10",
+      "cell_id": "MATR_b4c10",
+      "file": "MATR_b4c10.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1082,
+      "n_soh_cycles": 1082,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1082,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9678646326065063,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c11",
+      "cell_id": "MATR_b4c11",
+      "file": "MATR_b4c11.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 930,
+      "n_soh_cycles": 930,
+      "available_cycle_min": 1,
+      "available_cycle_max": 930,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9654257297515869,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c12",
+      "cell_id": "MATR_b4c12",
+      "file": "MATR_b4c12.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 898,
+      "n_soh_cycles": 898,
+      "available_cycle_min": 1,
+      "available_cycle_max": 898,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9645014405250549,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c13",
+      "cell_id": "MATR_b4c13",
+      "file": "MATR_b4c13.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 869,
+      "n_soh_cycles": 869,
+      "available_cycle_min": 1,
+      "available_cycle_max": 869,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9718059301376343,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c14",
+      "cell_id": "MATR_b4c14",
+      "file": "MATR_b4c14.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 767,
+      "n_soh_cycles": 767,
+      "available_cycle_min": 1,
+      "available_cycle_max": 767,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9668321013450623,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c15",
+      "cell_id": "MATR_b4c15",
+      "file": "MATR_b4c15.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 871,
+      "n_soh_cycles": 871,
+      "available_cycle_min": 1,
+      "available_cycle_max": 871,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9680795669555664,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c16",
+      "cell_id": "MATR_b4c16",
+      "file": "MATR_b4c16.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 983,
+      "n_soh_cycles": 983,
+      "available_cycle_min": 1,
+      "available_cycle_max": 983,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9629197120666504,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c17",
+      "cell_id": "MATR_b4c17",
+      "file": "MATR_b4c17.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 930,
+      "n_soh_cycles": 930,
+      "available_cycle_min": 1,
+      "available_cycle_max": 930,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9469229578971863,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c18",
+      "cell_id": "MATR_b4c18",
+      "file": "MATR_b4c18.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1057,
+      "n_soh_cycles": 1057,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1057,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.957741379737854,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c19",
+      "cell_id": "MATR_b4c19",
+      "file": "MATR_b4c19.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1111,
+      "n_soh_cycles": 1111,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1111,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9565994739532471,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c2",
+      "cell_id": "MATR_b4c2",
+      "file": "MATR_b4c2.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 784,
+      "n_soh_cycles": 784,
+      "available_cycle_min": 1,
+      "available_cycle_max": 784,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9587742686271667,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c20",
+      "cell_id": "MATR_b4c20",
+      "file": "MATR_b4c20.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 804,
+      "n_soh_cycles": 804,
+      "available_cycle_min": 1,
+      "available_cycle_max": 804,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9513621926307678,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c21",
+      "cell_id": "MATR_b4c21",
+      "file": "MATR_b4c21.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 903,
+      "n_soh_cycles": 903,
+      "available_cycle_min": 1,
+      "available_cycle_max": 903,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9620122313499451,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c22",
+      "cell_id": "MATR_b4c22",
+      "file": "MATR_b4c22.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 745,
+      "n_soh_cycles": 745,
+      "available_cycle_min": 1,
+      "available_cycle_max": 745,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.957298994064331,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c23",
+      "cell_id": "MATR_b4c23",
+      "file": "MATR_b4c23.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1094,
+      "n_soh_cycles": 1094,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1094,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9552059173583984,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c24",
+      "cell_id": "MATR_b4c24",
+      "file": "MATR_b4c24.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1115,
+      "n_soh_cycles": 1115,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1115,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9524452686309814,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c25",
+      "cell_id": "MATR_b4c25",
+      "file": "MATR_b4c25.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 567,
+      "n_soh_cycles": 567,
+      "available_cycle_min": 1,
+      "available_cycle_max": 567,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9414708614349365,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c26",
+      "cell_id": "MATR_b4c26",
+      "file": "MATR_b4c26.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 579,
+      "n_soh_cycles": 579,
+      "available_cycle_min": 1,
+      "available_cycle_max": 579,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9451298117637634,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c27",
+      "cell_id": "MATR_b4c27",
+      "file": "MATR_b4c27.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 563,
+      "n_soh_cycles": 563,
+      "available_cycle_min": 1,
+      "available_cycle_max": 563,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9455370903015137,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c28",
+      "cell_id": "MATR_b4c28",
+      "file": "MATR_b4c28.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 882,
+      "n_soh_cycles": 882,
+      "available_cycle_min": 1,
+      "available_cycle_max": 882,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.97017502784729,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c29",
+      "cell_id": "MATR_b4c29",
+      "file": "MATR_b4c29.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 956,
+      "n_soh_cycles": 956,
+      "available_cycle_min": 1,
+      "available_cycle_max": 956,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9706933498382568,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c3",
+      "cell_id": "MATR_b4c3",
+      "file": "MATR_b4c3.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 911,
+      "n_soh_cycles": 911,
+      "available_cycle_min": 1,
+      "available_cycle_max": 911,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9546272158622742,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c30",
+      "cell_id": "MATR_b4c30",
+      "file": "MATR_b4c30.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 719,
+      "n_soh_cycles": 719,
+      "available_cycle_min": 1,
+      "available_cycle_max": 719,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9564711451530457,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c31",
+      "cell_id": "MATR_b4c31",
+      "file": "MATR_b4c31.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 832,
+      "n_soh_cycles": 832,
+      "available_cycle_min": 1,
+      "available_cycle_max": 832,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9587318301200867,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c32",
+      "cell_id": "MATR_b4c32",
+      "file": "MATR_b4c32.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 839,
+      "n_soh_cycles": 839,
+      "available_cycle_min": 1,
+      "available_cycle_max": 839,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9612836241722107,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c33",
+      "cell_id": "MATR_b4c33",
+      "file": "MATR_b4c33.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 530,
+      "n_soh_cycles": 530,
+      "available_cycle_min": 1,
+      "available_cycle_max": 530,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9696195125579834,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c34",
+      "cell_id": "MATR_b4c34",
+      "file": "MATR_b4c34.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 997,
+      "n_soh_cycles": 997,
+      "available_cycle_min": 1,
+      "available_cycle_max": 997,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9560025334358215,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c35",
+      "cell_id": "MATR_b4c35",
+      "file": "MATR_b4c35.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1131,
+      "n_soh_cycles": 1131,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1131,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9602405428886414,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c36",
+      "cell_id": "MATR_b4c36",
+      "file": "MATR_b4c36.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 713,
+      "n_soh_cycles": 713,
+      "available_cycle_min": 1,
+      "available_cycle_max": 713,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9649831652641296,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c37",
+      "cell_id": "MATR_b4c37",
+      "file": "MATR_b4c37.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1005,
+      "n_soh_cycles": 1005,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1005,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9501124024391174,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c38",
+      "cell_id": "MATR_b4c38",
+      "file": "MATR_b4c38.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1230,
+      "n_soh_cycles": 1230,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1230,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9637636542320251,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c39",
+      "cell_id": "MATR_b4c39",
+      "file": "MATR_b4c39.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 761,
+      "n_soh_cycles": 761,
+      "available_cycle_min": 1,
+      "available_cycle_max": 761,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9549207091331482,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c4",
+      "cell_id": "MATR_b4c4",
+      "file": "MATR_b4c4.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 912,
+      "n_soh_cycles": 912,
+      "available_cycle_min": 1,
+      "available_cycle_max": 912,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9484530091285706,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c40",
+      "cell_id": "MATR_b4c40",
+      "file": "MATR_b4c40.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1122,
+      "n_soh_cycles": 1122,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1122,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9645664691925049,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c41",
+      "cell_id": "MATR_b4c41",
+      "file": "MATR_b4c41.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 997,
+      "n_soh_cycles": 997,
+      "available_cycle_min": 1,
+      "available_cycle_max": 997,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9629377126693726,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c42",
+      "cell_id": "MATR_b4c42",
+      "file": "MATR_b4c42.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 915,
+      "n_soh_cycles": 915,
+      "available_cycle_min": 1,
+      "available_cycle_max": 915,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9571869373321533,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c43",
+      "cell_id": "MATR_b4c43",
+      "file": "MATR_b4c43.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 951,
+      "n_soh_cycles": 951,
+      "available_cycle_min": 1,
+      "available_cycle_max": 951,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9496172666549683,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c44",
+      "cell_id": "MATR_b4c44",
+      "file": "MATR_b4c44.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1077,
+      "n_soh_cycles": 1077,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1077,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9512424468994141,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c5",
+      "cell_id": "MATR_b4c5",
+      "file": "MATR_b4c5.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 1067,
+      "n_soh_cycles": 1067,
+      "available_cycle_min": 1,
+      "available_cycle_max": 1067,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9453251957893372,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c6",
+      "cell_id": "MATR_b4c6",
+      "file": "MATR_b4c6.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 777,
+      "n_soh_cycles": 777,
+      "available_cycle_min": 1,
+      "available_cycle_max": 777,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9442685842514038,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c7",
+      "cell_id": "MATR_b4c7",
+      "file": "MATR_b4c7.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 562,
+      "n_soh_cycles": 562,
+      "available_cycle_min": 1,
+      "available_cycle_max": 562,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9591801166534424,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c8",
+      "cell_id": "MATR_b4c8",
+      "file": "MATR_b4c8.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 718,
+      "n_soh_cycles": 718,
+      "available_cycle_min": 1,
+      "available_cycle_max": 718,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9564614295959473,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    },
+    {
+      "battery_id": "MATR_b4c9",
+      "cell_id": "MATR_b4c9",
+      "file": "MATR_b4c9.pkl",
+      "dataset": "MATR",
+      "n_raw_cycles": 529,
+      "n_soh_cycles": 529,
+      "available_cycle_min": 1,
+      "available_cycle_max": 529,
+      "lookback_cycles": 10,
+      "target_cycles_requested": [
+        20,
+        60,
+        110
+      ],
+      "available_horizons": [
+        10,
+        50,
+        100
+      ],
+      "missing_horizons": [],
+      "reference_capacity": 1.1,
+      "capacity_used_as_input": false,
+      "feature_order": [
+        "current",
+        "voltage",
+        "dV"
+      ],
+      "status": "used",
+      "soh_current_cycle_20": 0.9648176431655884,
+      "input_shape": [
+        10,
+        100,
+        3
+      ],
+      "feature_errors": [],
+      "soh_errors": []
+    }
+  ]
+}
