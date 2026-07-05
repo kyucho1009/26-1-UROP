@@ -1,0 +1,5 @@
+dataset,selection_stage,horizon,model,seeds_evaluated,n_validation_samples_mean,MAE_mean,MAE_std,RMSE_mean,RMSE_std,MAPE_percent_mean,MAPE_percent_std,R2_mean,R2_std,Skill_MAE_vs_persistence_mean,Skill_MAE_vs_persistence_std,MAE_improvement_vs_cpmlp_mean,MAE_improvement_percent_vs_cpmlp_mean,RMSE_improvement_vs_cpmlp_mean,MAPE_improvement_vs_cpmlp_mean,Skill_MAE_vs_cpmlp_mean
+MATR,step7_validation_only,50,cpmlp_cpdsconv_fusion,1,26064.0,0.0025126422687386206,,0.005215529851354889,,0.29149478643467275,,0.9931334219008017,,0.7968878263251422,,,,,,
+MATR,step7_validation_only,50,persistence,1,26064.0,0.01237071231762239,,0.02370980301492506,,1.5290683913232275,,0.8580944488793788,,0.0,,,,,,
+MATR,step7_validation_only,100,cpmlp_cpdsconv_fusion,1,24364.0,0.005532776260146991,,0.011788690260576907,,0.6476772352886511,,0.9659418743572592,,0.751137355691163,,,,,,
+MATR,step7_validation_only,100,persistence,1,24364.0,0.02223224894002513,,0.04160144966042096,,2.7713787374530146,,0.5758626113951166,,0.0,,,,,,

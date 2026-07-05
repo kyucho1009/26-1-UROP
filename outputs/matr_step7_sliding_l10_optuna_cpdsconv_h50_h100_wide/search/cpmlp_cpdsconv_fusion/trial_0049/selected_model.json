@@ -1,0 +1,45 @@
+{
+  "dataset": "MATR",
+  "selection_stage": "step7_validation_only",
+  "test_metrics_used": false,
+  "lookback_cycles": 10,
+  "horizons": [
+    50,
+    100
+  ],
+  "features": [
+    "current",
+    "voltage",
+    "dV"
+  ],
+  "target": "delta_soh",
+  "sample_mode": "sliding-window",
+  "target_scale": 100.0,
+  "selection_rule": "lowest_avg_validation_MAE_then_RMSE_MAPE_stdMAE_skill",
+  "rank_used_for_selection": false,
+  "selected_model": "cpmlp_cpdsconv_fusion",
+  "horizon_specific_best": {
+    "50": {
+      "horizon": 50,
+      "selected_model": "cpmlp_cpdsconv_fusion",
+      "MAE_mean": 0.0026268473351254208,
+      "RMSE_mean": 0.005452549206562052,
+      "MAPE_percent_mean": 0.30634432575791604,
+      "Skill_MAE_vs_persistence_mean": 0.7876559354319952,
+      "MAE_improvement_vs_cpmlp_mean": null,
+      "MAE_improvement_percent_vs_cpmlp_mean": null,
+      "Skill_MAE_vs_cpmlp_mean": null
+    },
+    "100": {
+      "horizon": 100,
+      "selected_model": "cpmlp_cpdsconv_fusion",
+      "MAE_mean": 0.00570841538355163,
+      "RMSE_mean": 0.011695529353316449,
+      "MAPE_percent_mean": 0.6699404801837721,
+      "Skill_MAE_vs_persistence_mean": 0.7432371597245538,
+      "MAE_improvement_vs_cpmlp_mean": null,
+      "MAE_improvement_percent_vs_cpmlp_mean": null,
+      "Skill_MAE_vs_cpmlp_mean": null
+    }
+  }
+}

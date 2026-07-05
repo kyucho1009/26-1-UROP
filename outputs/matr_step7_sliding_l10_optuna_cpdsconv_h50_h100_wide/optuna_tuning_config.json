@@ -1,0 +1,73 @@
+{
+  "models": [
+    "cpmlp_cpdsconv_fusion"
+  ],
+  "target_scale": 100.0,
+  "sample_mode": "sliding-window",
+  "search_horizons": [
+    50,
+    100
+  ],
+  "search_seeds": [
+    42
+  ],
+  "search_reference_models": [
+    "persistence"
+  ],
+  "confirm_horizons": [
+    50,
+    100
+  ],
+  "confirm_seeds": [
+    42,
+    43,
+    44
+  ],
+  "confirm_reference_models": [
+    "persistence",
+    "cpmlp"
+  ],
+  "n_trials": 50,
+  "confirm_top_k": 3,
+  "device": "cuda",
+  "search_space": {
+    "lr": [
+      5e-05,
+      0.001
+    ],
+    "weight_decay": [
+      1e-07,
+      0.0003
+    ],
+    "dropout": [
+      0.05,
+      0.1,
+      0.2,
+      0.3
+    ],
+    "batch_size": [
+      64,
+      128,
+      256
+    ],
+    "epochs": [
+      50,
+      80
+    ],
+    "patience": [
+      8,
+      12
+    ],
+    "size_presets": [
+      "medium",
+      "large",
+      "xlarge"
+    ],
+    "score_weights": {
+      "rmse": 0.0,
+      "mape": 0.0,
+      "std_mae": 0.0,
+      "worst_mae": 0.3
+    }
+  }
+}

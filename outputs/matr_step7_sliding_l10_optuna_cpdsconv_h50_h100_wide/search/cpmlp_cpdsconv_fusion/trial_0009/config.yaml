@@ -1,0 +1,40 @@
+dataset: MATR
+selection_stage: step7_validation_only
+data_root: MATR
+output_dir: outputs\matr_step7_sliding_l10_optuna_cpdsconv_h50_h100_wide\search\cpmlp_cpdsconv_fusion\trial_0009
+lookback_cycles: 10
+horizons:
+  - 50
+  - 100
+seeds:
+  - 42
+models:
+  - persistence
+  - cpmlp_cpdsconv_fusion
+features:
+  - current
+  - voltage
+  - dV
+target: delta_soh
+sample_mode: sliding-window
+target_scale: 100.0
+fixed_len: 100
+batch_size: 128
+epochs: 80
+optimizer: Adam
+loss: MSE(delta_soh)
+early_stopping_metric: validation_MAE_reconstructed_SOH
+patience: 12
+min_delta: 0.0
+lr: 0.00022540860524828654
+weight_decay: 1.5100727136930637e-07
+dropout: 0.1
+mlp_embed_dim: 128
+gru_embed_dim: 64
+model_hidden: 256
+gru_hidden: 64
+dsconv_channels: 128
+zero_output_init: false
+debug: false
+test_metrics_used: false
+selection_rule: lowest_avg_validation_MAE_then_RMSE_MAPE_stdMAE_skill

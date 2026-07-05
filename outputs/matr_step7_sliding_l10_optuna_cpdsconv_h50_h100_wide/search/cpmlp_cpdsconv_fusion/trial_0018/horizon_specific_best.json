@@ -1,0 +1,24 @@
+{
+  "50": {
+    "horizon": 50,
+    "selected_model": "cpmlp_cpdsconv_fusion",
+    "MAE_mean": 0.002623494647036234,
+    "RMSE_mean": 0.005191669845775314,
+    "MAPE_percent_mean": 0.3102593235828364,
+    "Skill_MAE_vs_persistence_mean": 0.7879269536242468,
+    "MAE_improvement_vs_cpmlp_mean": null,
+    "MAE_improvement_percent_vs_cpmlp_mean": null,
+    "Skill_MAE_vs_cpmlp_mean": null
+  },
+  "100": {
+    "horizon": 100,
+    "selected_model": "cpmlp_cpdsconv_fusion",
+    "MAE_mean": 0.004781663088772297,
+    "RMSE_mean": 0.009800790500210807,
+    "MAPE_percent_mean": 0.5654869849755464,
+    "Skill_MAE_vs_persistence_mean": 0.7849222046014526,
+    "MAE_improvement_vs_cpmlp_mean": null,
+    "MAE_improvement_percent_vs_cpmlp_mean": null,
+    "Skill_MAE_vs_cpmlp_mean": null
+  }
+}

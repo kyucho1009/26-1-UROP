@@ -1,0 +1,15 @@
+{
+  "model": "persistence",
+  "dataset": "MATR",
+  "selection_stage": "step7_validation_only",
+  "seed": 42,
+  "horizon": 100,
+  "rule": "delta_soh_pred=0; soh_pred=soh_current_at_input_end_cycle",
+  "metrics": {
+    "MAE": 0.02223224894002513,
+    "RMSE": 0.04160144966042096,
+    "MAPE_percent": 2.7713787374530146,
+    "R2": 0.5758626113951166,
+    "Skill_MAE_vs_persistence": 0.0
+  }
+}
