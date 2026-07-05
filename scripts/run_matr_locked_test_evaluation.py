@@ -25,6 +25,45 @@ def load_json(path: str | Path) -> dict[str, Any]:
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
+def merge_optuna_context(config: dict[str, Any], context: dict[str, Any], context_path: Path) -> dict[str, Any]:
+    merged = dict(config)
+    passthrough_keys = [
+        "target_scale",
+        "sample_mode",
+        "fixed_len",
+        "search_horizons",
+        "search_seeds",
+        "confirm_horizons",
+        "confirm_seeds",
+        "search_reference_models",
+        "confirm_reference_models",
+    ]
+    for key in passthrough_keys:
+        if merged.get(key) in (None, "", []):
+            value = context.get(key)
+            if value not in (None, "", []):
+                merged[key] = value
+    if merged.get("lookback_cycles") in (None, "", []):
+        value = context.get("lookback") or context.get("lookback_cycles")
+        if value not in (None, "", []):
+            merged["lookback_cycles"] = value
+    if merged.get("search_models") in (None, "", []):
+        value = context.get("models")
+        if value not in (None, "", []):
+            merged["search_models"] = value
+    merged["_optuna_tuning_config_path"] = str(context_path)
+    return merged
+
+
+def load_locked_config(path: str | Path) -> dict[str, Any]:
+    config_path = Path(path)
+    config = load_json(config_path)
+    sidecar_path = config_path.with_name("optuna_tuning_config.json")
+    if sidecar_path.exists():
+        config = merge_optuna_context(config, load_json(sidecar_path), sidecar_path)
+    return config
+
+
 def save_json(path: Path, payload: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(step7.json_sanitize(payload), indent=2, allow_nan=False), encoding="utf-8")
@@ -49,16 +88,36 @@ def config_value(config: dict[str, Any], key: str, default: Any = None) -> Any:
     selected_hyper = config.get("selected_hyperparameters", {})
     if key in selected_hyper:
         return selected_hyper[key]
+    best = config.get("best", {})
+    if isinstance(best, dict) and key in best:
+        return best[key]
     return default
 
 
+def config_sequence(config: dict[str, Any], keys: Sequence[str], default: Sequence[Any]) -> list[Any]:
+    for key in keys:
+        value = config.get(key)
+        if value:
+            return list(value)
+    return list(default)
+
+
 def build_runtime_config(config: dict[str, Any], args: argparse.Namespace) -> dict[str, Any]:
-    hyper = config.get("hyperparameters", {}) or config.get("selected_hyperparameters", {})
-    selected_model = str(config.get("selected_model"))
+    best = config.get("best", {})
+    if not isinstance(best, dict):
+        best = {}
+    hyper = config.get("hyperparameters", {}) or config.get("selected_hyperparameters", {}) or best
+    selected_model = str(config.get("selected_model") or best.get("model"))
     if not selected_model or selected_model == "None":
         raise ValueError("locked config must include selected_model")
     if bool(config.get("test_metrics_used", False)):
         raise ValueError("locked config unexpectedly says test metrics were used for selection")
+    if best and not (args.sample_mode or config.get("sample_mode")):
+        raise ValueError(
+            "Optuna best config is missing sample_mode. Use a best_optuna_config.json "
+            "created with the updated tuner, keep optuna_tuning_config.json in the same "
+            "folder, or pass --sample-mode explicitly."
+        )
 
     models = [selected_model]
     if args.include_references:
@@ -75,8 +134,20 @@ def build_runtime_config(config: dict[str, Any], args: argparse.Namespace) -> di
         "models": models,
         "lookback": int(args.lookback or config.get("lookback_cycles", 20)),
         "sample_mode": str(args.sample_mode or config.get("sample_mode", step7.SAMPLE_MODE_FIRST_WINDOW)),
-        "horizons": [int(item) for item in (args.horizons or config.get("horizons", [10, 50, 100]))],
-        "seeds": [int(item) for item in (args.seeds or config.get("seeds", [42, 43, 44]))],
+        "horizons": [
+            int(item)
+            for item in (
+                args.horizons
+                or config_sequence(config, ["horizons", "confirm_horizons", "search_horizons"], [10, 50, 100])
+            )
+        ],
+        "seeds": [
+            int(item)
+            for item in (
+                args.seeds
+                or config_sequence(config, ["seeds", "confirm_seeds", "search_seeds"], [42, 43, 44])
+            )
+        ],
         "target_scale": float(args.target_scale or config_value(config, "target_scale", 1.0)),
         "fixed_len": int(args.fixed_len or config_value(config, "fixed_len", 100)),
         "batch_size": int(args.batch_size or hyper.get("batch_size", 16)),
@@ -261,7 +332,7 @@ Important files:
 
 
 def run(args: argparse.Namespace) -> None:
-    locked_config = load_json(args.config_path)
+    locked_config = load_locked_config(args.config_path)
     cfg = build_runtime_config(locked_config, args)
     if args.debug:
         cfg["epochs"] = min(cfg["epochs"], 3)
