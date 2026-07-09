@@ -1,0 +1,56 @@
+{
+  "dataset": "MATR",
+  "stage": "locked_test_evaluation",
+  "test_metrics_used_for_selection": false,
+  "selected_model": "cpmlp_cpdsconv_fusion",
+  "locked_config_path": "outputs\\matr_step7_sliding_l10_optuna_cpdsconv_h50_h100_wide\\best_optuna_config.json",
+  "runtime_config": {
+    "selected_model": "cpmlp_cpdsconv_fusion",
+    "models": [
+      "persistence",
+      "cpmlp",
+      "cpmlp_cpdsconv_fusion"
+    ],
+    "lookback": 5,
+    "sample_mode": "sliding-window",
+    "horizons": [
+      50,
+      100
+    ],
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "target_scale": 100.0,
+    "fixed_len": 100,
+    "batch_size": 64,
+    "dropout": 0.1,
+    "dsconv_channels": 64,
+    "epochs": 80,
+    "gru_embed_dim": 64,
+    "gru_hidden": 64,
+    "lr": 0.0005916560570546164,
+    "mlp_embed_dim": 32,
+    "model_hidden": 128,
+    "patience": 12,
+    "weight_decay": 1.227178136281113e-06,
+    "clip_grad_norm": 1.0
+  },
+  "test_summary": {
+    "dataset": "MATR",
+    "stage": "locked_test_evaluation",
+    "split": "test",
+    "model": "cpmlp_cpdsconv_fusion",
+    "horizons_evaluated": 2,
+    "avg_MAE_mean": 0.00426106778792132,
+    "avg_RMSE_mean": 0.008129950341681614,
+    "avg_MAPE_percent_mean": 0.526229231729481,
+    "std_MAE_mean": 0.0018810891860149344,
+    "worst_MAE_mean": 0.005591198707369163,
+    "average_Skill_MAE_vs_persistence": 0.7905516749056087,
+    "average_MAE_improvement_vs_cpmlp": -7.244941680391291e-06,
+    "average_MAE_improvement_percent_vs_cpmlp": -2.6615176014549844,
+    "average_Skill_MAE_vs_cpmlp": -0.026615176014549862
+  }
+}
