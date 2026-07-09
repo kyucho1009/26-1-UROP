@@ -1,0 +1,107 @@
+{
+  "locked_config_path": "outputs\\matr_step7_sliding_l10_optuna_cpdsconv_h50_h100_wide\\best_optuna_config.json",
+  "locked_config": {
+    "dataset": "MATR",
+    "selection_stage": "post_step7_fusion_hyperparameter_tuning",
+    "test_metrics_used": false,
+    "target_scale": 100.0,
+    "lookback_cycles": 10,
+    "search_models": [
+      "cpmlp_cpdsconv_fusion"
+    ],
+    "objective": "minimize_avg_validation_MAE_with_optional_small_tie_weights",
+    "best": {
+      "stage": "confirm",
+      "model": "cpmlp_cpdsconv_fusion",
+      "candidate_index": 1,
+      "source_trial_number": 18,
+      "search_score": 0.00513707779453586,
+      "confirm_score": 0.00557034571009683,
+      "batch_size": 64,
+      "dropout": 0.1,
+      "dsconv_channels": 64,
+      "epochs": 80,
+      "gru_embed_dim": 64,
+      "gru_hidden": 64,
+      "lr": 0.0005916560570546164,
+      "mlp_embed_dim": 32,
+      "model_hidden": 128,
+      "patience": 12,
+      "size_preset": "medium",
+      "weight_decay": 1.227178136281113e-06,
+      "avg_MAE_mean": 0.0040029750113793,
+      "avg_RMSE_mean": 0.008602802419525,
+      "avg_MAPE_percent_mean": 0.4771228191824895,
+      "std_MAE_mean": 0.0017275947803751,
+      "worst_MAE_mean": 0.0052245689957251,
+      "average_Skill_MAE_vs_persistence": 0.7785705953929132,
+      "average_MAE_improvement_vs_cpmlp": 0.0002800284610463,
+      "average_MAE_improvement_percent_vs_cpmlp": 5.356857800704898,
+      "average_Skill_MAE_vs_cpmlp": 0.0535685780070489,
+      "horizons_evaluated": 2,
+      "selected": true,
+      "selection_rule": "lowest_avg_validation_MAE_then_RMSE_MAPE_stdMAE_skill",
+      "output_dir": "outputs\\matr_step7_sliding_l10_optuna_cpdsconv_h50_h100_wide\\confirm\\cpmlp_cpdsconv_fusion\\candidate_01_trial_0018"
+    },
+    "sample_mode": "sliding-window",
+    "search_horizons": [
+      50,
+      100
+    ],
+    "search_seeds": [
+      42
+    ],
+    "confirm_horizons": [
+      50,
+      100
+    ],
+    "confirm_seeds": [
+      42,
+      43,
+      44
+    ],
+    "search_reference_models": [
+      "persistence"
+    ],
+    "confirm_reference_models": [
+      "persistence",
+      "cpmlp"
+    ],
+    "_optuna_tuning_config_path": "outputs\\matr_step7_sliding_l10_optuna_cpdsconv_h50_h100_wide\\optuna_tuning_config.json"
+  },
+  "runtime_config": {
+    "selected_model": "cpmlp_cpdsconv_fusion",
+    "models": [
+      "persistence",
+      "cpmlp",
+      "cpmlp_cpdsconv_fusion"
+    ],
+    "lookback": 20,
+    "sample_mode": "sliding-window",
+    "horizons": [
+      50,
+      100
+    ],
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "target_scale": 100.0,
+    "fixed_len": 100,
+    "batch_size": 64,
+    "dropout": 0.1,
+    "dsconv_channels": 64,
+    "epochs": 80,
+    "gru_embed_dim": 64,
+    "gru_hidden": 64,
+    "lr": 0.0005916560570546164,
+    "mlp_embed_dim": 32,
+    "model_hidden": 128,
+    "patience": 12,
+    "weight_decay": 1.227178136281113e-06,
+    "clip_grad_norm": 1.0
+  },
+  "device": "cuda",
+  "test_metrics_used_for_selection": false
+}
