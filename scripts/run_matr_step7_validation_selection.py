@@ -6,7 +6,9 @@ import math
 import os
 import pickle
 import random
+import re
 import sys
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable, Sequence
@@ -54,6 +56,7 @@ METRIC_COLUMNS = ["MAE", "RMSE", "MAPE_percent", "R2", "Skill_MAE_vs_persistence
 class BatteryRecord:
     battery_id: str
     cell_id: str
+    batch_id: str
     file_path: Path
     X_early: np.ndarray
     soh_current: float
@@ -118,6 +121,55 @@ def is_matr_file(path: str | Path) -> bool:
     return Path(path).name.startswith("MATR")
 
 
+def extract_matr_batch_id(value: str | Path) -> str:
+    """Extract MATR protocol batch id such as b1 from MATR_b1c0."""
+    stem = Path(value).stem if not isinstance(value, str) else Path(value).stem
+    match = re.search(r"(b\d+)c\d+", stem, flags=re.IGNORECASE)
+    if match:
+        return match.group(1).lower()
+    match = re.search(r"(b\d+)", stem, flags=re.IGNORECASE)
+    if match:
+        return match.group(1).lower()
+    return "unknown"
+
+
+def parse_batch_filter(values: Sequence[str] | None) -> list[str]:
+    if not values:
+        return []
+    if isinstance(values, str):
+        values = [values]
+    parsed: list[str] = []
+    for value in values:
+        for item in str(value).split(","):
+            item = item.strip().lower()
+            if not item or item in {"all", "*"}:
+                continue
+            if not re.fullmatch(r"b\d+", item):
+                raise ValueError(f"invalid MATR batch id {item!r}; expected values like b1, b2, b3, b4")
+            if item not in parsed:
+                parsed.append(item)
+    return parsed
+
+
+def filter_matr_files_by_batches(
+    matr_files: Sequence[Path],
+    batches: Sequence[str],
+) -> tuple[list[Path], list[Path]]:
+    batch_set = set(parse_batch_filter(batches))
+    if not batch_set:
+        return sorted(matr_files), []
+    selected = [path for path in matr_files if extract_matr_batch_id(path) in batch_set]
+    excluded = [path for path in matr_files if extract_matr_batch_id(path) not in batch_set]
+    if not selected:
+        available = sorted({extract_matr_batch_id(path) for path in matr_files})
+        raise ValueError(
+            "no MATR pkl files matched --batches "
+            + ", ".join(sorted(batch_set))
+            + f"; available batches={available}"
+        )
+    return sorted(selected), sorted(excluded)
+
+
 def find_all_pkl_files(data_root: str | Path) -> list[Path]:
     root = Path(data_root)
     if root.is_file():
@@ -160,6 +212,7 @@ def load_matr_battery(
     cycles = sorted(cycles, key=lambda item: int(item.get("cycle_number", len(cycles))))
     cell_id = str(cell.get("cell_id", path.stem))
     battery_id = path.stem
+    batch_id = extract_matr_batch_id(battery_id)
     reference_capacity = pipe.infer_reference_capacity(cell, cycles)
 
     features_by_cycle: dict[int, np.ndarray] = {}
@@ -196,6 +249,7 @@ def load_matr_battery(
     manifest_item: dict[str, Any] = {
         "battery_id": battery_id,
         "cell_id": cell_id,
+        "batch_id": batch_id,
         "file": path.name,
         "dataset": DATASET,
         "n_raw_cycles": len(cycles),
@@ -224,6 +278,7 @@ def load_matr_battery(
     record = BatteryRecord(
         battery_id=battery_id,
         cell_id=cell_id,
+        batch_id=batch_id,
         file_path=path,
         X_early=X_early,
         soh_current=float(soh_by_cycle[lookback]) if lookback in soh_by_cycle else float("nan"),
@@ -298,6 +353,8 @@ def load_dataset_manifest(
     horizons: Sequence[int],
     fixed_len: int,
     sample_mode: str = SAMPLE_MODE_FIRST_WINDOW,
+    requested_batches: Sequence[str] | None = None,
+    excluded_batch_files: Sequence[Path] | None = None,
 ) -> tuple[list[BatteryRecord], dict[str, Any]]:
     records: list[BatteryRecord] = []
     battery_items = []
@@ -339,13 +396,20 @@ def load_dataset_manifest(
         )
         for horizon in horizons
     }
+    batch_counts = dict(sorted(Counter(record.batch_id for record in records).items()))
+    excluded_batch_files = list(excluded_batch_files or [])
     manifest = {
         "dataset": DATASET,
         "data_root": str(data_root),
-        "total_pkl_files_found": len(matr_files) + len(excluded_files),
+        "total_pkl_files_found": len(matr_files) + len(excluded_files) + len(excluded_batch_files),
         "used_matr_pkl_files": [path.name for path in matr_files],
         "excluded_non_matr_pkl_count": len(excluded_files),
         "excluded_non_matr_pkl_examples": [path.name for path in excluded_files[:20]],
+        "requested_batches": parse_batch_filter(requested_batches),
+        "used_batches": sorted(batch_counts),
+        "batch_counts": batch_counts,
+        "excluded_matr_pkl_by_batch_count": len(excluded_batch_files),
+        "excluded_matr_pkl_by_batch_examples": [path.name for path in excluded_batch_files[:20]],
         "capacity_used_as_input": False,
         "features": FEATURES,
         "target": TARGET,
@@ -444,6 +508,7 @@ def build_horizon_split(
                     "sample_mode": sample_mode,
                     "battery_id": record.battery_id,
                     "cell_id": record.cell_id,
+                    "batch_id": record.batch_id,
                     "file": record.file_path.name,
                     "input_start_cycle": input_start,
                     "input_end_cycle": input_end,
@@ -485,10 +550,15 @@ def make_split_manifest(
     sample_counts: dict[str, dict[str, int]] = {}
     battery_counts: dict[str, dict[str, int]] = {}
     unavailable: dict[str, dict[str, list[str]]] = {}
+    batches_by_split: dict[str, list[str]] = {}
+    batch_counts_by_split: dict[str, dict[str, int]] = {}
     for split_name, ids in split_ids.items():
         sample_counts[split_name] = {}
         battery_counts[split_name] = {}
         unavailable[split_name] = {}
+        split_batches = [records_by_id[battery_id].batch_id for battery_id in ids]
+        batches_by_split[split_name] = sorted(set(split_batches))
+        batch_counts_by_split[split_name] = dict(sorted(Counter(split_batches).items()))
         for horizon in horizons:
             available_ids = [
                 battery_id
@@ -516,6 +586,8 @@ def make_split_manifest(
         "validation_battery_ids": split_ids["validation"],
         "test_battery_ids": split_ids["test"],
         "counts": {split: len(ids) for split, ids in split_ids.items()},
+        "batches_by_split": batches_by_split,
+        "batch_counts_by_split": batch_counts_by_split,
         "sample_counts_by_split_horizon": sample_counts,
         "battery_counts_by_split_horizon": battery_counts,
         "battery_ids_without_target_by_split_horizon": unavailable,
@@ -1160,7 +1232,9 @@ def run(args: argparse.Namespace) -> None:
     if "persistence" not in models:
         raise ValueError("persistence baseline must be included in --models")
 
-    matr_files, excluded_files = find_matr_files(data_root)
+    batch_filter = parse_batch_filter(args.batches)
+    all_matr_files, excluded_files = find_matr_files(data_root)
+    matr_files, excluded_batch_files = filter_matr_files_by_batches(all_matr_files, batch_filter)
     records, dataset_manifest = load_dataset_manifest(
         matr_files,
         excluded_files,
@@ -1169,6 +1243,8 @@ def run(args: argparse.Namespace) -> None:
         horizons=horizons,
         fixed_len=args.fixed_len,
         sample_mode=args.sample_mode,
+        requested_batches=batch_filter,
+        excluded_batch_files=excluded_batch_files,
     )
     records_by_id = {record.battery_id: record for record in records}
 
@@ -1181,6 +1257,8 @@ def run(args: argparse.Namespace) -> None:
         "horizons": horizons,
         "seeds": seeds,
         "models": models,
+        "batches": batch_filter,
+        "batch_filter_applied": bool(batch_filter),
         "features": FEATURES,
         "target": TARGET,
         "sample_mode": args.sample_mode,
@@ -1321,6 +1399,8 @@ def run(args: argparse.Namespace) -> None:
         "target": TARGET,
         "sample_mode": args.sample_mode,
         "target_scale": args.target_scale,
+        "batches": batch_filter,
+        "batch_filter_applied": bool(batch_filter),
         "selection_rule": "lowest_avg_validation_MAE_then_RMSE_MAPE_stdMAE_skill",
         "rank_used_for_selection": False,
         "selected_model": selected_model,
@@ -1362,6 +1442,12 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument("--horizons", type=int, nargs="+", default=[10, 50, 100])
+    parser.add_argument(
+        "--batches",
+        nargs="+",
+        default=None,
+        help="Filter MATR files to protocol batch ids before battery-level split, e.g. --batches b1 or --batches b1 b2.",
+    )
     parser.add_argument("--seeds", type=int, nargs="+", default=[42, 43, 44])
     parser.add_argument("--models", nargs="+", default=DEFAULT_MODELS)
     parser.add_argument("--fixed-len", type=int, default=100)

@@ -45,10 +45,25 @@ def parse_int_list(values: Sequence[str] | None, default: Sequence[int]) -> list
 def parse_model_list(values: Sequence[str] | None, default: Sequence[str]) -> list[str]:
     if not values:
         return list(default)
+    if isinstance(values, str):
+        values = [values]
     parsed: list[str] = []
     for value in values:
         parsed.extend(item.strip() for item in str(value).split(",") if item.strip())
     return parsed
+
+
+def parse_batch_list(values: Sequence[str] | None) -> list[str]:
+    batches: list[str] = []
+    for item in parse_model_list(values, []):
+        batch = item.lower()
+        if batch in {"all", "*"}:
+            continue
+        if not re.fullmatch(r"b\d+", batch):
+            raise ValueError(f"invalid MATR batch id {item!r}; expected values like b1, b2, b3, b4")
+        if batch not in batches:
+            batches.append(batch)
+    return batches
 
 
 def normalize_reference_models(values: Sequence[str] | None, default: Sequence[str]) -> list[str]:
@@ -199,6 +214,8 @@ def build_step7_command(
     ]
     if args.zero_output_init:
         command.append("--zero-output-init")
+    if args.batches:
+        command.extend(["--batches", *args.batches])
     return command
 
 
@@ -253,6 +270,7 @@ def run_step7(
         {
             "model": model,
             "target_scale": args.target_scale,
+            "batches": args.batches,
             "seeds": list(seeds),
             "horizons": list(horizons),
             "reference_models": list(reference_models),
@@ -434,6 +452,13 @@ def write_summary_artifacts(args: argparse.Namespace, search_rows: list[dict[str
             "test_metrics_used": False,
             "target_scale": args.target_scale,
             "lookback_cycles": args.lookback,
+            "sample_mode": args.sample_mode,
+            "fixed_len": args.fixed_len,
+            "batches": args.batches,
+            "search_horizons": args.search_horizons,
+            "search_seeds": args.search_seeds,
+            "confirm_horizons": args.confirm_horizons,
+            "confirm_seeds": args.confirm_seeds,
             "search_models": args.models,
             "objective": "minimize_avg_validation_MAE_with_optional_small_tie_weights",
             "best": best,
@@ -445,6 +470,7 @@ This directory was produced by `scripts/tune_matr_step7_fusion_optuna.py`.
 
 - Tuned models: {', '.join(args.models)}
 - Target scale: {args.target_scale}
+- Batches: {args.batches or "all"}
 - Test metrics used: false
 - Search trials per model: {args.n_trials}
 - Confirm top-k per model: {args.confirm_top_k}
@@ -474,6 +500,12 @@ def parse_args() -> argparse.Namespace:
         help="Pass-through sample mode for the Step 7 validation script.",
     )
     parser.add_argument("--fixed-len", type=int, default=100)
+    parser.add_argument(
+        "--batches",
+        nargs="+",
+        default=None,
+        help="Filter MATR files to protocol batch ids before battery-level split, e.g. --batches b1 or --batches b1 b2.",
+    )
     parser.add_argument("--search-horizons", nargs="+", default=["10", "50", "100"])
     parser.add_argument("--search-seeds", nargs="+", default=["42"])
     parser.add_argument("--search-reference-models", nargs="+", default=DEFAULT_SEARCH_REFERENCE_MODELS)
@@ -516,6 +548,7 @@ def parse_args() -> argparse.Namespace:
     args.confirm_horizons = parse_int_list(args.confirm_horizons, [10, 50, 100])
     args.confirm_seeds = parse_int_list(args.confirm_seeds, [42, 43, 44])
     args.confirm_reference_models = normalize_reference_models(args.confirm_reference_models, DEFAULT_CONFIRM_REFERENCE_MODELS)
+    args.batches = parse_batch_list(args.batches)
     args.data_root = Path(args.data_root)
     args.step7_script = Path(args.step7_script)
     if args.target_scale <= 0:
@@ -531,7 +564,10 @@ def main() -> None:
         {
             "models": args.models,
             "target_scale": args.target_scale,
+            "lookback": args.lookback,
             "sample_mode": args.sample_mode,
+            "fixed_len": args.fixed_len,
+            "batches": args.batches,
             "search_horizons": args.search_horizons,
             "search_seeds": args.search_seeds,
             "search_reference_models": args.search_reference_models,
