@@ -364,6 +364,39 @@ def load_checkpoint_for_inference(
     return model, payload, checkpoint_cfg, mean, std
 
 
+def parse_checkpoint_roots(values: str | Path | Sequence[str | Path] | None) -> list[Path]:
+    if values is None:
+        return []
+    if isinstance(values, (str, Path)):
+        values = [values]
+    roots = [Path(value) for value in values]
+    missing = [str(root) for root in roots if not root.is_dir()]
+    if missing:
+        raise FileNotFoundError("checkpoint root(s) do not exist: " + ", ".join(missing))
+    return roots
+
+
+def find_checkpoint_path(
+    checkpoint_roots: Sequence[Path],
+    *,
+    seed: int,
+    horizon: int,
+    model_name: str,
+) -> Path:
+    candidates = [
+        root / f"seed{seed}" / f"horizon{horizon}" / f"{model_name}.pt"
+        for root in checkpoint_roots
+    ]
+    for candidate in candidates:
+        if candidate.is_file():
+            return candidate
+    attempted = ", ".join(str(candidate) for candidate in candidates)
+    raise FileNotFoundError(
+        f"no checkpoint found for seed={seed}, horizon={horizon}, model={model_name}; "
+        f"attempted: {attempted}"
+    )
+
+
 def build_batch_reports(predictions: pd.DataFrame) -> dict[str, pd.DataFrame]:
     required = {
         "dataset",
@@ -536,6 +569,7 @@ def build_batch_reports(predictions: pd.DataFrame) -> dict[str, pd.DataFrame]:
 
 def write_inference_readme(output_dir: Path, cfg: dict[str, Any], args: argparse.Namespace) -> None:
     evaluated_models = unique_preserve_order(["persistence", *cfg["models"]])
+    checkpoint_roots = [str(path) for path in parse_checkpoint_roots(args.checkpoint_root)]
     text = f"""# MATR Locked Test Inference-Only Batch Analysis
 
 This folder reuses the previously trained global-batch checkpoints and the
@@ -548,7 +582,7 @@ tuning, or batch-specific fine-tuning was performed in this run.
 - Horizons: {cfg["horizons"]}
 - Seeds: {cfg["seeds"]}
 - Dataset batch filter: none (all batches loaded)
-- Checkpoint root: `{args.checkpoint_root}`
+- Checkpoint roots, searched in order: {checkpoint_roots}
 - Source split manifest root: `{args.split_manifest_root}`
 - Target scale: loaded from each checkpoint
 
@@ -579,10 +613,8 @@ def run_checkpoint_inference_only(
     if not args.split_manifest_root:
         raise ValueError("--split-manifest-root is required with --inference-only")
 
-    checkpoint_root = Path(args.checkpoint_root)
+    checkpoint_roots = parse_checkpoint_roots(args.checkpoint_root)
     split_manifest_root = Path(args.split_manifest_root)
-    if not checkpoint_root.is_dir():
-        raise FileNotFoundError(f"checkpoint root does not exist: {checkpoint_root}")
     if not split_manifest_root.is_dir():
         raise FileNotFoundError(f"split manifest root does not exist: {split_manifest_root}")
 
@@ -625,7 +657,7 @@ def run_checkpoint_inference_only(
             "runtime_config": cfg,
             "evaluated_models": evaluated_models,
             "device": device,
-            "checkpoint_root": str(checkpoint_root),
+            "checkpoint_roots": [str(path) for path in checkpoint_roots],
             "split_manifest_root": str(split_manifest_root),
             "test_metrics_used_for_selection": False,
         },
@@ -682,8 +714,11 @@ def run_checkpoint_inference_only(
             )
 
             for model_name in learned_models:
-                checkpoint_path = (
-                    checkpoint_root / f"seed{seed}" / f"horizon{horizon}" / f"{model_name}.pt"
+                checkpoint_path = find_checkpoint_path(
+                    checkpoint_roots,
+                    seed=seed,
+                    horizon=horizon,
+                    model_name=model_name,
                 )
                 print(
                     f"[inference only] seed={seed} horizon={horizon} "
@@ -870,6 +905,11 @@ def run(args: argparse.Namespace) -> None:
     if args.inference_only:
         run_checkpoint_inference_only(args, locked_config, cfg)
         return
+    if args.split_manifest_root and cfg["batches"]:
+        raise ValueError(
+            "a source --split-manifest-root cannot be combined with --batches; "
+            "the source manifests describe the original all-batch split"
+        )
     if args.debug:
         cfg["epochs"] = min(cfg["epochs"], 3)
         cfg["patience"] = min(cfg["patience"], 2)
@@ -910,6 +950,7 @@ def run(args: argparse.Namespace) -> None:
             "locked_config": locked_config,
             "runtime_config": cfg,
             "device": device,
+            "source_split_manifest_root": str(args.split_manifest_root) if args.split_manifest_root else None,
             "test_metrics_used_for_selection": False,
         },
     )
@@ -921,15 +962,23 @@ def run(args: argparse.Namespace) -> None:
 
     for seed in cfg["seeds"]:
         step7.pipe.set_seed(seed)
-        split_ids = step7.split_battery_ids(records, seed=seed)
-        split_manifest = step7.make_split_manifest(
-            seed=seed,
-            split_ids=split_ids,
-            records_by_id=records_by_id,
-            horizons=cfg["horizons"],
-            lookback=cfg["lookback"],
-            sample_mode=cfg["sample_mode"],
-        )
+        if args.split_manifest_root:
+            split_ids, source_manifest, source_manifest_path = load_source_split_manifest(
+                Path(args.split_manifest_root), seed, records_by_id, cfg
+            )
+            split_manifest = dict(source_manifest)
+            split_manifest["source_manifest_path"] = str(source_manifest_path)
+            split_manifest["reused_without_resplitting"] = True
+        else:
+            split_ids = step7.split_battery_ids(records, seed=seed)
+            split_manifest = step7.make_split_manifest(
+                seed=seed,
+                split_ids=split_ids,
+                records_by_id=records_by_id,
+                horizons=cfg["horizons"],
+                lookback=cfg["lookback"],
+                sample_mode=cfg["sample_mode"],
+            )
         save_json(output_dir / f"split_manifest_seed{seed}.json", split_manifest)
         split_manifests.append(split_manifest)
 
@@ -1116,8 +1165,12 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--checkpoint-root",
+        nargs="+",
         default=None,
-        help="Checkpoint directory containing seed<seed>/horizon<horizon>/<model>.pt.",
+        help=(
+            "One or more checkpoint directories containing "
+            "seed<seed>/horizon<horizon>/<model>.pt; searched in the given order."
+        ),
     )
     parser.add_argument(
         "--split-manifest-root",
