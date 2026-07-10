@@ -37,6 +37,7 @@ def merge_optuna_context(config: dict[str, Any], context: dict[str, Any], contex
         "confirm_seeds",
         "search_reference_models",
         "confirm_reference_models",
+        "batches",
     ]
     for key in passthrough_keys:
         if merged.get(key) in (None, "", []):
@@ -128,10 +129,14 @@ def build_runtime_config(config: dict[str, Any], args: argparse.Namespace) -> di
     unknown = sorted(set(models) - set(step7.DEFAULT_MODELS))
     if unknown:
         raise ValueError(f"unsupported model(s): {unknown}; allowed={step7.DEFAULT_MODELS}")
+    batch_values = args.batches if args.batches is not None else config.get("batches")
+    batches = step7.parse_batch_filter(batch_values)
 
     return {
         "selected_model": selected_model,
         "models": models,
+        "batches": batches,
+        "batch_filter_applied": bool(batches),
         "lookback": int(args.lookback or config.get("lookback_cycles", 20)),
         "sample_mode": str(args.sample_mode or config.get("sample_mode", step7.SAMPLE_MODE_FIRST_WINDOW)),
         "horizons": [
@@ -241,6 +246,533 @@ def make_model(name: str, cfg: dict[str, Any]):
     return model
 
 
+def prediction_frame(
+    split: step7.HorizonSplit,
+    *,
+    seed: int,
+    model: str,
+    pred_soh: np.ndarray,
+    pred_delta: np.ndarray,
+) -> pd.DataFrame:
+    if len(split.meta) != len(pred_soh) or len(split.meta) != len(pred_delta):
+        raise ValueError("prediction count does not match split metadata")
+    frame = pd.DataFrame(split.meta)
+    frame["stage"] = "locked_test_evaluation"
+    frame["seed"] = int(seed)
+    frame["model"] = model
+    frame["actual_soh"] = split.y_soh_target.astype(np.float64)
+    frame["current_soh"] = split.current_soh.astype(np.float64)
+    frame["actual_delta_soh"] = split.y_delta.astype(np.float64)
+    frame["pred_delta_soh"] = np.asarray(pred_delta, dtype=np.float64)
+    frame["pred_soh"] = np.asarray(pred_soh, dtype=np.float64)
+    frame["abs_error"] = np.abs(frame["actual_soh"] - frame["pred_soh"])
+    frame["squared_error"] = (frame["actual_soh"] - frame["pred_soh"]) ** 2
+    return frame
+
+
+def load_source_split_manifest(
+    manifest_root: Path,
+    seed: int,
+    records_by_id: dict[str, step7.BatteryRecord],
+    cfg: dict[str, Any],
+) -> tuple[dict[str, list[str]], dict[str, Any], Path]:
+    path = manifest_root / f"split_manifest_seed{seed}.json"
+    if not path.is_file():
+        raise FileNotFoundError(f"missing source split manifest: {path}")
+    manifest = load_json(path)
+    if int(manifest.get("seed", -1)) != int(seed):
+        raise ValueError(f"split manifest seed mismatch in {path}")
+    if manifest.get("dataset") != step7.DATASET:
+        raise ValueError(f"split manifest is not a {step7.DATASET} manifest: {path}")
+    if int(manifest.get("lookback_cycles", -1)) != int(cfg["lookback"]):
+        raise ValueError(f"lookback mismatch between runtime config and {path}")
+    if manifest.get("sample_mode") != cfg["sample_mode"]:
+        raise ValueError(f"sample_mode mismatch between runtime config and {path}")
+    manifest_horizons = {int(item) for item in manifest.get("horizons", [])}
+    missing_horizons = sorted(set(cfg["horizons"]) - manifest_horizons)
+    if missing_horizons:
+        raise ValueError(f"source split manifest {path} does not cover horizons {missing_horizons}")
+
+    split_ids = {
+        "train": [str(item) for item in manifest.get("train_battery_ids", [])],
+        "validation": [str(item) for item in manifest.get("validation_battery_ids", [])],
+        "test": [str(item) for item in manifest.get("test_battery_ids", [])],
+    }
+    if any(not ids for ids in split_ids.values()):
+        raise ValueError(f"source split manifest has an empty split: {path}")
+    step7.verify_no_split_overlap(split_ids)
+
+    manifest_ids = set().union(*[set(ids) for ids in split_ids.values()])
+    dataset_ids = set(records_by_id)
+    missing_from_dataset = sorted(manifest_ids - dataset_ids)
+    missing_from_manifest = sorted(dataset_ids - manifest_ids)
+    if missing_from_dataset or missing_from_manifest:
+        raise ValueError(
+            f"dataset/split manifest battery IDs differ for seed {seed}; "
+            f"missing_from_dataset={missing_from_dataset[:10]}, "
+            f"missing_from_manifest={missing_from_manifest[:10]}"
+        )
+    return split_ids, manifest, path
+
+
+def load_checkpoint_for_inference(
+    checkpoint_path: Path,
+    *,
+    seed: int,
+    horizon: int,
+    model_name: str,
+    cfg: dict[str, Any],
+    device: str,
+):
+    if not checkpoint_path.is_file():
+        raise FileNotFoundError(f"missing checkpoint: {checkpoint_path}")
+    try:
+        payload = torch.load(checkpoint_path, map_location="cpu", weights_only=False)
+    except TypeError:
+        payload = torch.load(checkpoint_path, map_location="cpu")
+
+    if str(payload.get("model")) != model_name:
+        raise ValueError(f"checkpoint model mismatch: {checkpoint_path}")
+    if int(payload.get("seed", -1)) != int(seed):
+        raise ValueError(f"checkpoint seed mismatch: {checkpoint_path}")
+    if int(payload.get("horizon", -1)) != int(horizon):
+        raise ValueError(f"checkpoint horizon mismatch: {checkpoint_path}")
+    if "model_state_dict" not in payload:
+        raise ValueError(f"checkpoint has no model_state_dict: {checkpoint_path}")
+    if "normalization_mean" not in payload or "normalization_std" not in payload:
+        raise ValueError(f"checkpoint has no saved train normalization statistics: {checkpoint_path}")
+
+    checkpoint_cfg = dict(cfg)
+    checkpoint_cfg.update(payload.get("runtime_config", {}))
+    for key in ["lookback", "fixed_len"]:
+        if int(checkpoint_cfg[key]) != int(cfg[key]):
+            raise ValueError(f"checkpoint {key} mismatch: {checkpoint_path}")
+    if checkpoint_cfg.get("sample_mode") != cfg["sample_mode"]:
+        raise ValueError(f"checkpoint sample_mode mismatch: {checkpoint_path}")
+
+    mean = np.asarray(payload["normalization_mean"], dtype=np.float32)
+    std = np.asarray(payload["normalization_std"], dtype=np.float32)
+    if mean.shape != std.shape or mean.size == 0 or not np.all(np.isfinite(mean)):
+        raise ValueError(f"invalid checkpoint normalization arrays: {checkpoint_path}")
+    if not np.all(np.isfinite(std)) or np.any(std <= 0):
+        raise ValueError(f"invalid checkpoint normalization std: {checkpoint_path}")
+
+    model = make_model(model_name, checkpoint_cfg)
+    model.load_state_dict(payload["model_state_dict"])
+    model.to(device)
+    model.eval()
+    return model, payload, checkpoint_cfg, mean, std
+
+
+def build_batch_reports(predictions: pd.DataFrame) -> dict[str, pd.DataFrame]:
+    required = {
+        "dataset",
+        "stage",
+        "split",
+        "seed",
+        "batch_id",
+        "horizon",
+        "model",
+        "battery_id",
+        "cell_id",
+        "actual_soh",
+        "pred_soh",
+    }
+    missing = sorted(required - set(predictions.columns))
+    if missing:
+        raise ValueError(f"prediction table is missing batch-report columns: {missing}")
+
+    batch_group_cols = ["dataset", "stage", "split", "seed", "batch_id", "horizon"]
+    batch_rows: list[dict[str, Any]] = []
+    for group_key, group in predictions.groupby(batch_group_cols, sort=True, dropna=False):
+        key_values = dict(zip(batch_group_cols, group_key))
+        persistence = group.loc[group["model"] == "persistence"]
+        if persistence.empty:
+            raise ValueError(f"missing persistence predictions for batch group {key_values}")
+        persistence_mae = step7.compute_metrics(
+            persistence["actual_soh"].to_numpy(), persistence["pred_soh"].to_numpy()
+        )["MAE"]
+        for model_name, model_group in group.groupby("model", sort=True):
+            metrics = step7.metric_row_with_skill(
+                model_group["actual_soh"].to_numpy(),
+                model_group["pred_soh"].to_numpy(),
+                persistence_mae,
+            )
+            batch_rows.append(
+                {
+                    **key_values,
+                    "model": model_name,
+                    "n_batteries": int(model_group["battery_id"].nunique()),
+                    "n_windows": int(len(model_group)),
+                    **metrics,
+                }
+            )
+    by_seed = pd.DataFrame(batch_rows).sort_values(
+        ["horizon", "batch_id", "seed", "MAE", "RMSE", "model"]
+    )
+    by_seed = step7.add_cpmlp_comparison_columns(
+        by_seed,
+        group_cols=batch_group_cols,
+        mae_col="MAE",
+        rmse_col="RMSE",
+        mape_col="MAPE_percent",
+    )
+
+    summary_group_cols = ["dataset", "stage", "split", "batch_id", "horizon", "model"]
+    by_batch_horizon = (
+        by_seed.groupby(summary_group_cols, as_index=False)
+        .agg(
+            seeds_evaluated=("seed", "nunique"),
+            n_batteries_mean=("n_batteries", "mean"),
+            n_windows_mean=("n_windows", "mean"),
+            MAE_mean=("MAE", "mean"),
+            MAE_std=("MAE", "std"),
+            RMSE_mean=("RMSE", "mean"),
+            RMSE_std=("RMSE", "std"),
+            MAPE_percent_mean=("MAPE_percent", "mean"),
+            MAPE_percent_std=("MAPE_percent", "std"),
+            R2_mean=("R2", "mean"),
+            R2_std=("R2", "std"),
+            Skill_MAE_vs_persistence_mean=("Skill_MAE_vs_persistence", "mean"),
+            Skill_MAE_vs_persistence_std=("Skill_MAE_vs_persistence", "std"),
+            MAE_improvement_vs_cpmlp_mean=("MAE_improvement_vs_cpmlp", "mean"),
+            MAE_improvement_percent_vs_cpmlp_mean=("MAE_improvement_percent_vs_cpmlp", "mean"),
+            Skill_MAE_vs_cpmlp_mean=("Skill_MAE_vs_cpmlp", "mean"),
+        )
+        .sort_values(["horizon", "batch_id", "MAE_mean", "RMSE_mean", "model"])
+    )
+
+    cell_group_cols = batch_group_cols + ["battery_id", "cell_id"]
+    cell_rows: list[dict[str, Any]] = []
+    for group_key, group in predictions.groupby(cell_group_cols, sort=True, dropna=False):
+        key_values = dict(zip(cell_group_cols, group_key))
+        persistence = group.loc[group["model"] == "persistence"]
+        if persistence.empty:
+            raise ValueError(f"missing persistence predictions for cell group {key_values}")
+        persistence_mae = step7.compute_metrics(
+            persistence["actual_soh"].to_numpy(), persistence["pred_soh"].to_numpy()
+        )["MAE"]
+        for model_name, model_group in group.groupby("model", sort=True):
+            metrics = step7.metric_row_with_skill(
+                model_group["actual_soh"].to_numpy(),
+                model_group["pred_soh"].to_numpy(),
+                persistence_mae,
+            )
+            cell_rows.append(
+                {
+                    **key_values,
+                    "model": model_name,
+                    "n_windows": int(len(model_group)),
+                    **metrics,
+                }
+            )
+    by_cell = pd.DataFrame(cell_rows).sort_values(
+        ["horizon", "batch_id", "seed", "battery_id", "MAE", "model"]
+    )
+
+    macro_group_cols = batch_group_cols + ["model"]
+    macro_by_seed = (
+        by_cell.groupby(macro_group_cols, as_index=False)
+        .agg(
+            n_batteries=("battery_id", "nunique"),
+            n_windows=("n_windows", "sum"),
+            macro_cell_MAE=("MAE", "mean"),
+            macro_cell_RMSE=("RMSE", "mean"),
+            macro_cell_MAPE_percent=("MAPE_percent", "mean"),
+            macro_cell_R2=("R2", "mean"),
+        )
+        .sort_values(["horizon", "batch_id", "seed", "macro_cell_MAE", "model"])
+    )
+    macro_base_cols = batch_group_cols
+    macro_persistence = macro_by_seed.loc[
+        macro_by_seed["model"] == "persistence", macro_base_cols + ["macro_cell_MAE"]
+    ].rename(columns={"macro_cell_MAE": "_persistence_macro_cell_MAE"})
+    macro_by_seed = macro_by_seed.merge(macro_persistence, on=macro_base_cols, how="left")
+    macro_by_seed["macro_cell_Skill_MAE_vs_persistence"] = np.where(
+        macro_by_seed["_persistence_macro_cell_MAE"] > 0,
+        1.0 - macro_by_seed["macro_cell_MAE"] / macro_by_seed["_persistence_macro_cell_MAE"],
+        np.nan,
+    )
+    macro_by_seed = macro_by_seed.drop(columns=["_persistence_macro_cell_MAE"])
+    macro_by_seed = step7.add_cpmlp_comparison_columns(
+        macro_by_seed,
+        group_cols=macro_base_cols,
+        mae_col="macro_cell_MAE",
+        rmse_col="macro_cell_RMSE",
+        mape_col="macro_cell_MAPE_percent",
+    )
+
+    macro_summary_group_cols = ["dataset", "stage", "split", "batch_id", "horizon", "model"]
+    macro_by_batch_horizon = (
+        macro_by_seed.groupby(macro_summary_group_cols, as_index=False)
+        .agg(
+            seeds_evaluated=("seed", "nunique"),
+            n_batteries_mean=("n_batteries", "mean"),
+            n_windows_mean=("n_windows", "mean"),
+            macro_cell_MAE_mean=("macro_cell_MAE", "mean"),
+            macro_cell_MAE_std=("macro_cell_MAE", "std"),
+            macro_cell_RMSE_mean=("macro_cell_RMSE", "mean"),
+            macro_cell_RMSE_std=("macro_cell_RMSE", "std"),
+            macro_cell_MAPE_percent_mean=("macro_cell_MAPE_percent", "mean"),
+            macro_cell_MAPE_percent_std=("macro_cell_MAPE_percent", "std"),
+            macro_cell_R2_mean=("macro_cell_R2", "mean"),
+            macro_cell_R2_std=("macro_cell_R2", "std"),
+            macro_cell_Skill_MAE_vs_persistence_mean=("macro_cell_Skill_MAE_vs_persistence", "mean"),
+            macro_cell_Skill_MAE_vs_persistence_std=("macro_cell_Skill_MAE_vs_persistence", "std"),
+            MAE_improvement_vs_cpmlp_mean=("MAE_improvement_vs_cpmlp", "mean"),
+            MAE_improvement_percent_vs_cpmlp_mean=("MAE_improvement_percent_vs_cpmlp", "mean"),
+            Skill_MAE_vs_cpmlp_mean=("Skill_MAE_vs_cpmlp", "mean"),
+        )
+        .sort_values(["horizon", "batch_id", "macro_cell_MAE_mean", "model"])
+    )
+    return {
+        "test_results_by_seed_batch_model_horizon.csv": by_seed,
+        "test_summary_by_batch_model_horizon.csv": by_batch_horizon,
+        "test_metrics_by_cell.csv": by_cell,
+        "test_results_macro_cell_by_seed_batch_model_horizon.csv": macro_by_seed,
+        "test_summary_macro_cell_by_batch_model_horizon.csv": macro_by_batch_horizon,
+    }
+
+
+def write_inference_readme(output_dir: Path, cfg: dict[str, Any], args: argparse.Namespace) -> None:
+    evaluated_models = unique_preserve_order(["persistence", *cfg["models"]])
+    text = f"""# MATR Locked Test Inference-Only Batch Analysis
+
+This folder reuses the previously trained global-batch checkpoints and the
+original battery-level test split. No training, validation selection, Optuna
+tuning, or batch-specific fine-tuning was performed in this run.
+
+- Selected model: `{cfg["selected_model"]}`
+- Models evaluated: {evaluated_models}
+- Lookback cycles: {cfg["lookback"]}
+- Horizons: {cfg["horizons"]}
+- Seeds: {cfg["seeds"]}
+- Dataset batch filter: none (all batches loaded)
+- Checkpoint root: `{args.checkpoint_root}`
+- Source split manifest root: `{args.split_manifest_root}`
+- Target scale: loaded from each checkpoint
+
+Important files:
+
+- `test_predictions.csv`: window-level predictions, including `batch_id`
+- `test_summary_by_model_horizon.csv`: global test metrics reproduced from checkpoints
+- `test_results_by_seed_batch_model_horizon.csv`: window-weighted batch metrics per seed
+- `test_summary_by_batch_model_horizon.csv`: seed-aggregated window-weighted batch metrics
+- `test_metrics_by_cell.csv`: metrics for each held-out battery cell
+- `test_summary_macro_cell_by_batch_model_horizon.csv`: seed-aggregated cell-macro batch metrics
+"""
+    (output_dir / "README.md").write_text(text, encoding="utf-8")
+
+
+def run_checkpoint_inference_only(
+    args: argparse.Namespace,
+    locked_config: dict[str, Any],
+    cfg: dict[str, Any],
+) -> None:
+    if cfg["batches"]:
+        raise ValueError(
+            "--inference-only must use the original all-batch dataset; remove --batches "
+            "and use --report-by-batch to stratify the existing test predictions"
+        )
+    if not args.checkpoint_root:
+        raise ValueError("--checkpoint-root is required with --inference-only")
+    if not args.split_manifest_root:
+        raise ValueError("--split-manifest-root is required with --inference-only")
+
+    checkpoint_root = Path(args.checkpoint_root)
+    split_manifest_root = Path(args.split_manifest_root)
+    if not checkpoint_root.is_dir():
+        raise FileNotFoundError(f"checkpoint root does not exist: {checkpoint_root}")
+    if not split_manifest_root.is_dir():
+        raise FileNotFoundError(f"split manifest root does not exist: {split_manifest_root}")
+
+    device = args.device
+    if device == "auto":
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+    if str(device).startswith("cuda") and not torch.cuda.is_available():
+        raise RuntimeError("CUDA was requested but torch.cuda.is_available() is false")
+
+    output_dir = Path(args.output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    all_matr_files, excluded_files = step7.find_matr_files(args.data_root)
+    records, dataset_manifest = step7.load_dataset_manifest(
+        all_matr_files,
+        excluded_files,
+        data_root=Path(args.data_root),
+        lookback=cfg["lookback"],
+        horizons=cfg["horizons"],
+        fixed_len=cfg["fixed_len"],
+        sample_mode=cfg["sample_mode"],
+        requested_batches=None,
+        excluded_batch_files=None,
+    )
+    records_by_id = {record.battery_id: record for record in records}
+    if len(dataset_manifest.get("used_batches", [])) < 2:
+        raise ValueError("inference-only batch analysis expected the unfiltered multi-batch MATR dataset")
+    learned_models = [model for model in cfg["models"] if model != "persistence"]
+    evaluated_models = ["persistence", *learned_models]
+
+    save_json(
+        output_dir / "locked_test_config.json",
+        {
+            "execution_mode": "checkpoint_inference_only",
+            "training_performed": False,
+            "validation_selection_performed": False,
+            "hyperparameter_tuning_performed": False,
+            "batch_specific_fine_tuning_performed": False,
+            "locked_config_path": str(args.config_path),
+            "locked_config": locked_config,
+            "runtime_config": cfg,
+            "evaluated_models": evaluated_models,
+            "device": device,
+            "checkpoint_root": str(checkpoint_root),
+            "split_manifest_root": str(split_manifest_root),
+            "test_metrics_used_for_selection": False,
+        },
+    )
+    save_json(output_dir / "dataset_manifest.json", dataset_manifest)
+
+    all_rows: list[dict[str, Any]] = []
+    prediction_frames: list[pd.DataFrame] = []
+
+    for seed in cfg["seeds"]:
+        split_ids, split_manifest, source_manifest_path = load_source_split_manifest(
+            split_manifest_root, seed, records_by_id, cfg
+        )
+        copied_manifest = dict(split_manifest)
+        copied_manifest["source_manifest_path"] = str(source_manifest_path)
+        copied_manifest["reused_without_resplitting"] = True
+        save_json(output_dir / f"split_manifest_seed{seed}.json", copied_manifest)
+
+        for horizon in cfg["horizons"]:
+            test_split = step7.build_horizon_split(
+                records_by_id,
+                split_ids["test"],
+                "test",
+                horizon,
+                cfg["lookback"],
+                cfg["sample_mode"],
+            )
+            step7.ensure_non_empty_split(test_split, "test", seed, horizon)
+
+            persistence_pred = persistence_predictions(test_split)
+            persistence_delta = np.zeros_like(test_split.y_delta, dtype=np.float32)
+            persistence_mae = step7.compute_metrics(test_split.y_soh_target, persistence_pred)["MAE"]
+            all_rows.append(
+                split_metrics_row(
+                    split_name="test",
+                    seed=seed,
+                    horizon=horizon,
+                    model="persistence",
+                    y_true=test_split.y_soh_target,
+                    y_pred=persistence_pred,
+                    persistence_mae=persistence_mae,
+                    best_epoch=0,
+                    checkpoint_path="",
+                )
+            )
+            prediction_frames.append(
+                prediction_frame(
+                    test_split,
+                    seed=seed,
+                    model="persistence",
+                    pred_soh=persistence_pred,
+                    pred_delta=persistence_delta,
+                )
+            )
+
+            for model_name in learned_models:
+                checkpoint_path = (
+                    checkpoint_root / f"seed{seed}" / f"horizon{horizon}" / f"{model_name}.pt"
+                )
+                print(
+                    f"[inference only] seed={seed} horizon={horizon} "
+                    f"model={model_name} device={device}",
+                    flush=True,
+                )
+                model, payload, checkpoint_cfg, mean, std = load_checkpoint_for_inference(
+                    checkpoint_path,
+                    seed=seed,
+                    horizon=horizon,
+                    model_name=model_name,
+                    cfg=cfg,
+                    device=device,
+                )
+                try:
+                    X_test = step7.normalize(test_split.X, mean, std)
+                except ValueError as exc:
+                    raise ValueError(f"normalization shape mismatch for {checkpoint_path}") from exc
+                target_scale = float(checkpoint_cfg["target_scale"])
+                pred_soh, pred_delta = evaluate_model_on_split(
+                    model,
+                    test_split,
+                    X_test,
+                    target_scale,
+                    cfg["batch_size"],
+                    device,
+                )
+                best_epoch = int(payload.get("best_epoch", 0))
+                all_rows.append(
+                    split_metrics_row(
+                        split_name="test",
+                        seed=seed,
+                        horizon=horizon,
+                        model=model_name,
+                        y_true=test_split.y_soh_target,
+                        y_pred=pred_soh,
+                        persistence_mae=persistence_mae,
+                        best_epoch=best_epoch,
+                        checkpoint_path=str(checkpoint_path),
+                    )
+                )
+                prediction_frames.append(
+                    prediction_frame(
+                        test_split,
+                        seed=seed,
+                        model=model_name,
+                        pred_soh=pred_soh,
+                        pred_delta=pred_delta,
+                    )
+                )
+                del model
+                if str(device).startswith("cuda"):
+                    torch.cuda.empty_cache()
+
+    raw = pd.DataFrame(all_rows)
+    raw.to_csv(output_dir / "metrics_raw.csv", index=False)
+    raw.to_csv(output_dir / "test_results_raw.csv", index=False)
+    test_by_seed, test_by_horizon, test_overall = aggregate(all_rows, "test")
+    test_by_seed.to_csv(output_dir / "test_results_by_seed.csv", index=False)
+    test_by_horizon.to_csv(output_dir / "test_summary_by_model_horizon.csv", index=False)
+    test_overall.to_csv(output_dir / "locked_test_summary.csv", index=False)
+
+    predictions = pd.concat(prediction_frames, ignore_index=True)
+    predictions.to_csv(output_dir / "test_predictions.csv", index=False)
+    if args.report_by_batch:
+        for filename, frame in build_batch_reports(predictions).items():
+            frame.to_csv(output_dir / filename, index=False)
+
+    selected_row = test_overall.loc[test_overall["model"] == cfg["selected_model"]]
+    save_json(
+        output_dir / "selected_model_test_summary.json",
+        {
+            "dataset": step7.DATASET,
+            "stage": "locked_test_evaluation",
+            "execution_mode": "checkpoint_inference_only",
+            "training_performed": False,
+            "test_metrics_used_for_selection": False,
+            "selected_model": cfg["selected_model"],
+            "locked_config_path": str(args.config_path),
+            "runtime_config": cfg,
+            "evaluated_models": evaluated_models,
+            "test_summary": selected_row.iloc[0].to_dict() if not selected_row.empty else None,
+        },
+    )
+    write_inference_readme(output_dir, cfg, args)
+    print("\n=== Locked checkpoint inference-only test summary ===", flush=True)
+    print(test_overall.to_string(index=False), flush=True)
+
+
 def aggregate(rows: list[dict[str, Any]], split_name: str) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     df = pd.DataFrame([row for row in rows if row["split"] == split_name])
     if df.empty:
@@ -318,6 +850,7 @@ locked.
 - Lookback cycles: {cfg["lookback"]}
 - Horizons: {cfg["horizons"]}
 - Seeds: {cfg["seeds"]}
+- Batches: {cfg["batches"] or "all"}
 - Target scale: {cfg["target_scale"]}
 - Features: {step7.FEATURES}
 
@@ -334,6 +867,9 @@ Important files:
 def run(args: argparse.Namespace) -> None:
     locked_config = load_locked_config(args.config_path)
     cfg = build_runtime_config(locked_config, args)
+    if args.inference_only:
+        run_checkpoint_inference_only(args, locked_config, cfg)
+        return
     if args.debug:
         cfg["epochs"] = min(cfg["epochs"], 3)
         cfg["patience"] = min(cfg["patience"], 2)
@@ -352,7 +888,8 @@ def run(args: argparse.Namespace) -> None:
     if not bool(locked_config.get("test_metrics_used", False)) is False:
         raise ValueError("locked config must not have used test metrics for selection")
 
-    matr_files, excluded_files = step7.find_matr_files(args.data_root)
+    all_matr_files, excluded_files = step7.find_matr_files(args.data_root)
+    matr_files, excluded_batch_files = step7.filter_matr_files_by_batches(all_matr_files, cfg["batches"])
     records, dataset_manifest = step7.load_dataset_manifest(
         matr_files,
         excluded_files,
@@ -361,6 +898,8 @@ def run(args: argparse.Namespace) -> None:
         horizons=cfg["horizons"],
         fixed_len=cfg["fixed_len"],
         sample_mode=cfg["sample_mode"],
+        requested_batches=cfg["batches"],
+        excluded_batch_files=excluded_batch_files,
     )
     records_by_id = {record.battery_id: record for record in records}
 
@@ -570,11 +1109,37 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--config-path", default="outputs/matr_step7_locked_validation_config/final_validation_config.json")
     parser.add_argument("--output-dir", default="outputs/matr_locked_test_evaluation")
     parser.add_argument("--device", default="auto")
+    parser.add_argument(
+        "--inference-only",
+        action="store_true",
+        help="Reuse saved global checkpoints and original split manifests; perform no training or validation.",
+    )
+    parser.add_argument(
+        "--checkpoint-root",
+        default=None,
+        help="Checkpoint directory containing seed<seed>/horizon<horizon>/<model>.pt.",
+    )
+    parser.add_argument(
+        "--split-manifest-root",
+        default=None,
+        help="Directory containing the original split_manifest_seed<seed>.json files.",
+    )
+    parser.add_argument(
+        "--report-by-batch",
+        action="store_true",
+        help="Write window-weighted and cell-macro test summaries stratified by MATR batch.",
+    )
     parser.add_argument("--models", nargs="+", default=None)
     parser.add_argument("--include-references", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--lookback", type=int, default=None)
     parser.add_argument("--sample-mode", choices=step7.SAMPLE_MODES, default=None)
     parser.add_argument("--horizons", type=int, nargs="+", default=None)
+    parser.add_argument(
+        "--batches",
+        nargs="+",
+        default=None,
+        help="Filter MATR files to protocol batch ids before battery-level split, e.g. --batches b1 or --batches b1 b2.",
+    )
     parser.add_argument("--seeds", type=int, nargs="+", default=None)
     parser.add_argument("--fixed-len", type=int, default=None)
     parser.add_argument("--target-scale", type=float, default=None)
