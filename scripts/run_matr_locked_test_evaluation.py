@@ -589,6 +589,7 @@ tuning, or batch-specific fine-tuning was performed in this run.
 Important files:
 
 - `test_predictions.csv`: window-level predictions, including `batch_id`
+- `validation_predictions.csv`: validation predictions when `--write-validation-predictions` is enabled
 - `test_summary_by_model_horizon.csv`: global test metrics reproduced from checkpoints
 - `test_results_by_seed_batch_model_horizon.csv`: window-weighted batch metrics per seed
 - `test_summary_by_batch_model_horizon.csv`: seed-aggregated window-weighted batch metrics
@@ -659,6 +660,7 @@ def run_checkpoint_inference_only(
             "device": device,
             "checkpoint_roots": [str(path) for path in checkpoint_roots],
             "split_manifest_root": str(split_manifest_root),
+            "validation_predictions_written": bool(args.write_validation_predictions),
             "test_metrics_used_for_selection": False,
         },
     )
@@ -666,6 +668,7 @@ def run_checkpoint_inference_only(
 
     all_rows: list[dict[str, Any]] = []
     prediction_frames: list[pd.DataFrame] = []
+    validation_prediction_frames: list[pd.DataFrame] = []
 
     for seed in cfg["seeds"]:
         split_ids, split_manifest, source_manifest_path = load_source_split_manifest(
@@ -677,6 +680,17 @@ def run_checkpoint_inference_only(
         save_json(output_dir / f"split_manifest_seed{seed}.json", copied_manifest)
 
         for horizon in cfg["horizons"]:
+            validation_split = None
+            if args.write_validation_predictions:
+                validation_split = step7.build_horizon_split(
+                    records_by_id,
+                    split_ids["validation"],
+                    "validation",
+                    horizon,
+                    cfg["lookback"],
+                    cfg["sample_mode"],
+                )
+                step7.ensure_non_empty_split(validation_split, "validation", seed, horizon)
             test_split = step7.build_horizon_split(
                 records_by_id,
                 split_ids["test"],
@@ -712,6 +726,17 @@ def run_checkpoint_inference_only(
                     pred_delta=persistence_delta,
                 )
             )
+            if validation_split is not None:
+                validation_persistence_pred = persistence_predictions(validation_split)
+                validation_prediction_frames.append(
+                    prediction_frame(
+                        validation_split,
+                        seed=seed,
+                        model="persistence",
+                        pred_soh=validation_persistence_pred,
+                        pred_delta=np.zeros_like(validation_split.y_delta, dtype=np.float32),
+                    )
+                )
 
             for model_name in learned_models:
                 checkpoint_path = find_checkpoint_path(
@@ -769,6 +794,30 @@ def run_checkpoint_inference_only(
                         pred_delta=pred_delta,
                     )
                 )
+                if validation_split is not None:
+                    try:
+                        X_validation = step7.normalize(validation_split.X, mean, std)
+                    except ValueError as exc:
+                        raise ValueError(
+                            f"validation normalization shape mismatch for {checkpoint_path}"
+                        ) from exc
+                    validation_pred_soh, validation_pred_delta = evaluate_model_on_split(
+                        model,
+                        validation_split,
+                        X_validation,
+                        target_scale,
+                        cfg["batch_size"],
+                        device,
+                    )
+                    validation_prediction_frames.append(
+                        prediction_frame(
+                            validation_split,
+                            seed=seed,
+                            model=model_name,
+                            pred_soh=validation_pred_soh,
+                            pred_delta=validation_pred_delta,
+                        )
+                    )
                 del model
                 if str(device).startswith("cuda"):
                     torch.cuda.empty_cache()
@@ -783,6 +832,9 @@ def run_checkpoint_inference_only(
 
     predictions = pd.concat(prediction_frames, ignore_index=True)
     predictions.to_csv(output_dir / "test_predictions.csv", index=False)
+    if validation_prediction_frames:
+        validation_predictions = pd.concat(validation_prediction_frames, ignore_index=True)
+        validation_predictions.to_csv(output_dir / "validation_predictions.csv", index=False)
     if args.report_by_batch:
         for filename, frame in build_batch_reports(predictions).items():
             frame.to_csv(output_dir / filename, index=False)
@@ -1161,7 +1213,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--inference-only",
         action="store_true",
-        help="Reuse saved global checkpoints and original split manifests; perform no training or validation.",
+        help=(
+            "Reuse saved global checkpoints and original split manifests; perform checkpoint "
+            "inference only, with no training or validation-based selection."
+        ),
     )
     parser.add_argument(
         "--checkpoint-root",
@@ -1181,6 +1236,14 @@ def parse_args() -> argparse.Namespace:
         "--report-by-batch",
         action="store_true",
         help="Write window-weighted and cell-macro test summaries stratified by MATR batch.",
+    )
+    parser.add_argument(
+        "--write-validation-predictions",
+        action="store_true",
+        help=(
+            "In inference-only mode, also write validation_predictions.csv using the saved "
+            "train normalization and original validation battery IDs."
+        ),
     )
     parser.add_argument("--models", nargs="+", default=None)
     parser.add_argument("--include-references", action=argparse.BooleanOptionalAction, default=True)
