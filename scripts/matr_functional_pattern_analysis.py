@@ -395,10 +395,18 @@ def _sustained_threshold_crossing(
     *,
     config: FunctionalPatternConfig,
 ) -> tuple[float, bool, str]:
-    """Find a threshold crossing supported over a subsequent cycle interval."""
+    """Find a sustained threshold crossing and keep censoring direction explicit.
+
+    When the first available trend value is already at or below ``threshold``,
+    the true crossing happened before observation began.  Recording the first
+    cycle as an observed event would manufacture an extremely short lifetime,
+    so such a landmark is returned as left-censored instead.
+    """
 
     x = np.asarray(cycles, dtype=float)
     y = np.asarray(trend, dtype=float)
+    if y[0] <= float(threshold):
+        return float("nan"), True, "left_censored_at_observation_start"
     for index in np.flatnonzero(y <= float(threshold)):
         end_cycle = x[index] + float(config.landmark_sustain_cycles)
         followup_index = int(np.searchsorted(x, end_cycle, side="left"))
@@ -477,15 +485,36 @@ def _preprocess_curves(
             crossing, censored, reason = _sustained_threshold_crossing(
                 cycles, unconstrained, threshold, config=config
             )
-            monotone_crossing, monotone_censored, _ = _sustained_threshold_crossing(
-                cycles, monotone, threshold, config=config
-            )
+            (
+                monotone_crossing,
+                monotone_censored,
+                monotone_reason,
+            ) = _sustained_threshold_crossing(cycles, monotone, threshold, config=config)
             label = f"t{int(round(threshold * 100))}"
+            censoring = (
+                "observed"
+                if not censored
+                else "left"
+                if reason == "left_censored_at_observation_start"
+                else "right"
+            )
+            monotone_censoring = (
+                "observed"
+                if not monotone_censored
+                else "left"
+                if monotone_reason == "left_censored_at_observation_start"
+                else "right"
+            )
             row[label] = crossing
             row[f"{label}_censored"] = bool(censored)
+            row[f"{label}_censoring"] = censoring
+            row[f"{label}_left_censored"] = censoring == "left"
+            row[f"{label}_right_censored"] = censoring == "right"
             row[f"{label}_status"] = reason
             row[f"{label}_monotone"] = monotone_crossing
             row[f"{label}_monotone_censored"] = bool(monotone_censored)
+            row[f"{label}_monotone_censoring"] = monotone_censoring
+            row[f"{label}_monotone_status"] = monotone_reason
             row[f"{label}_smoother_difference"] = (
                 float(abs(crossing - monotone_crossing))
                 if np.isfinite(crossing) and np.isfinite(monotone_crossing)
@@ -499,6 +528,13 @@ def _preprocess_curves(
         )
         row["shape_t90"] = shape_t90
         row["shape_t90_censored"] = bool(shape_t90_censored)
+        row["shape_t90_censoring"] = (
+            "observed"
+            if not shape_t90_censored
+            else "left"
+            if shape_t90_status == "left_censored_at_observation_start"
+            else "right"
+        )
         row["shape_t90_status"] = shape_t90_status
         transient_center, transient_scale = _robust_location_scale(residual)
         centered_residual = residual - transient_center
@@ -1161,7 +1197,7 @@ def _score_lifetime(
     landmark_table: pd.DataFrame,
     config: FunctionalPatternConfig,
 ) -> tuple[pd.DataFrame, pd.DataFrame]:
-    """Score sustained landmark timing while preserving right-censoring."""
+    """Score landmark timing while distinguishing left and right censoring."""
 
     frame = landmark_table.sort_values("battery_id").reset_index(drop=True).copy()
     labels = [f"t{int(round(value * 100))}" for value in LANDMARK_THRESHOLDS]
@@ -1173,8 +1209,12 @@ def _score_lifetime(
             targets = group.index.to_numpy(dtype=int)
             references = reference_indices[str(batch_id)]
             for column_index, label in enumerate(labels):
+                censoring_column = f"{label}_censoring"
                 ref_observed = references[
-                    ~frame.loc[references, f"{label}_censored"].to_numpy(dtype=bool)
+                    frame.loc[references, censoring_column]
+                    .astype(str)
+                    .eq("observed")
+                    .to_numpy(dtype=bool)
                     & np.isfinite(frame.loc[references, label].to_numpy(dtype=float))
                 ]
                 if len(ref_observed) < 3:
@@ -1185,14 +1225,15 @@ def _score_lifetime(
                 )
                 center, scale = _robust_location_scale(np.log1p(ref_duration))
                 for target in targets:
-                    if not bool(frame.loc[target, f"{label}_censored"]):
+                    censoring = str(frame.loc[target, censoring_column])
+                    if censoring == "observed":
                         duration = float(frame.loc[target, label] - frame.loc[target, "cycle_start"])
                         rarity_matrix[target, column_index] = abs(
                             (math.log1p(max(duration, 0.0)) - center) / scale
                         )
                         evidence_matrix[target, column_index] = True
-                    else:
-                        # A censored observation only supplies a lower bound and
+                    elif censoring == "right":
+                        # A right-censored observation supplies a lower bound and
                         # can support unusually long, never unusually short, life.
                         lower_bound = float(
                             frame.loc[target, "cycle_end"]
@@ -1204,6 +1245,17 @@ def _score_lifetime(
                         )
                         evidence_matrix[target, column_index] = (
                             rarity_matrix[target, column_index] > 0
+                        )
+                    elif censoring == "left":
+                        # The threshold was already crossed before measurement.
+                        # Its unknown event time is neither an observed short life
+                        # nor a right-censored lower bound, so it supplies no
+                        # lifetime-speed evidence.
+                        continue
+                    else:
+                        raise ValueError(
+                            f"Unknown {censoring_column}={censoring!r} for "
+                            f"battery_id={frame.loc[target, 'battery_id']!r}"
                         )
         ordered = np.sort(rarity_matrix, axis=1)[:, ::-1]
         score = ordered[:, 1]  # two-landmark consensus; zero when unavailable
@@ -1253,8 +1305,14 @@ def _score_lifetime(
     result["is_lifetime_candidate"] = result["lifetime_base_candidate"] & (
         result["lifetime_selection_frequency"] >= config.required_selection_frequency
     )
+    censoring_columns = [f"{label}_censoring" for label in labels]
+    censoring_values = frame[censoring_columns].astype(str)
+    result["lifetime_observed_landmarks"] = censoring_values.eq("observed").sum(axis=1)
+    result["lifetime_left_censored_landmarks"] = censoring_values.eq("left").sum(axis=1)
+    result["lifetime_right_censored_landmarks"] = censoring_values.eq("right").sum(axis=1)
     result["lifetime_evidence_note"] = (
-        "observed_landmarks_are_two_sided;censored_landmarks_only_support_long_life"
+        "observed_landmarks_are_two_sided;right_censored_only_support_long_life;"
+        "left_censored_supply_no_lifetime_speed_evidence"
     )
     return result, pd.DataFrame(audit_rows)
 
@@ -1628,7 +1686,7 @@ def _standardized_lifetime_landmarks(
     batch_median_duration = np.full(len(labels), np.nan, dtype=float)
     for column_index, label in enumerate(labels):
         observed[:, column_index] = (
-            ~batch[f"{label}_censored"].to_numpy(dtype=bool)
+            batch[f"{label}_censoring"].astype(str).eq("observed").to_numpy(dtype=bool)
             & np.isfinite(batch[label].to_numpy(dtype=float))
         )
         if np.sum(observed[:, column_index]) < 3:
@@ -2253,7 +2311,7 @@ def analyze_functional_patterns(
         shape_representation,
         view_prefix="shape",
         config=config,
-        stratify_by_batch=False,
+        stratify_by_batch=True,
     )
     absolute_scores, absolute_audit = _score_representation(
         absolute_representation,
