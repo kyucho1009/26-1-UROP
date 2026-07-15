@@ -300,6 +300,34 @@ class FunctionalPatternAnalysisBehaviorTest(unittest.TestCase):
             "A right-truncated normal prefix must not become a persistent-shape anomaly",
         )
 
+    def test_initially_below_t95_is_left_censored_not_short_lifetime(self):
+        curves = normal_population(30, batch_id="b4", prefix="b4_reference")
+        curves.append(
+            make_curve(
+                "b4_initially_below_t95",
+                batch_id="b4",
+                observed_cycles=320,
+                total_drop=0.10,
+                vertical_offset=-0.065,
+            )
+        )
+
+        result, summary = self.run_analysis(curves, seed=450)
+        row = summary.loc["b4_initially_below_t95"]
+        landmark = result.landmark_table.set_index("battery_id").loc[
+            "b4_initially_below_t95"
+        ]
+        self.assertEqual(landmark["t95_censoring"], "left")
+        self.assertTrue(bool(landmark["t95_left_censored"]))
+        self.assertTrue(np.isnan(float(landmark["t95"])))
+        self.assertFalse(bool(row["lifetime_analysis_eligible"]))
+        self.assertEqual(
+            row["lifetime_ineligibility_reason"],
+            "left_censored_t95_clock_origin",
+        )
+        self.assertFalse(bool(row["is_lifetime_candidate"]))
+        self.assertEqual(float(row["lifetime_score"]), 0.0)
+
     def test_three_similar_rare_curves_are_reported_as_a_stable_rare_group(self):
         curves = normal_population(48)
         for index in range(3):

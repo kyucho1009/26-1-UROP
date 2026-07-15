@@ -520,6 +520,12 @@ def _preprocess_curves(
                 if np.isfinite(crossing) and np.isfinite(monotone_crossing)
                 else float("nan")
             )
+        row["lifetime_analysis_eligible"] = row["t95_censoring"] != "left"
+        row["lifetime_ineligibility_reason"] = (
+            ""
+            if row["lifetime_analysis_eligible"]
+            else "left_censored_t95_clock_origin"
+        )
         shape_t90, shape_t90_censored, shape_t90_status = _sustained_threshold_crossing(
             cycles,
             despiked_soh,
@@ -1211,7 +1217,10 @@ def _score_lifetime(
             for column_index, label in enumerate(labels):
                 censoring_column = f"{label}_censoring"
                 ref_observed = references[
-                    frame.loc[references, censoring_column]
+                    frame.loc[references, "lifetime_analysis_eligible"].to_numpy(
+                        dtype=bool
+                    )
+                    & frame.loc[references, censoring_column]
                     .astype(str)
                     .eq("observed")
                     .to_numpy(dtype=bool)
@@ -1225,6 +1234,8 @@ def _score_lifetime(
                 )
                 center, scale = _robust_location_scale(np.log1p(ref_duration))
                 for target in targets:
+                    if not bool(frame.loc[target, "lifetime_analysis_eligible"]):
+                        continue
                     censoring = str(frame.loc[target, censoring_column])
                     if censoring == "observed":
                         duration = float(frame.loc[target, label] - frame.loc[target, "cycle_start"])
@@ -1260,8 +1271,9 @@ def _score_lifetime(
         ordered = np.sort(rarity_matrix, axis=1)[:, ::-1]
         score = ordered[:, 1]  # two-landmark consensus; zero when unavailable
         count = np.sum(rarity_matrix >= config.rarity_cutoff, axis=1)
-        strong = np.max(rarity_matrix, axis=1) >= config.strong_rarity_cutoff
-        candidate = (count >= 2) | strong
+        # A single extreme landmark is not enough: it can be a smoothing or
+        # clock-origin artifact.  Lifetime evidence requires two landmarks.
+        candidate = count >= 2
         return score, candidate
 
     full_references = {
@@ -1298,6 +1310,9 @@ def _score_lifetime(
                     "selected": bool(repeat_selected[index]),
                 }
             )
+    # Eligibility/censoring provenance already lives in ``landmark_table`` and
+    # is the left side of the final one-to-one merge.  Repeating those columns
+    # here would create ambiguous ``_x``/``_y`` names in the public summary.
     result = frame[["battery_id", "cell_id", "batch_id"]].copy()
     result["lifetime_score"] = score
     result["lifetime_base_candidate"] = base_candidate
@@ -1312,7 +1327,8 @@ def _score_lifetime(
     result["lifetime_right_censored_landmarks"] = censoring_values.eq("right").sum(axis=1)
     result["lifetime_evidence_note"] = (
         "observed_landmarks_are_two_sided;right_censored_only_support_long_life;"
-        "left_censored_supply_no_lifetime_speed_evidence"
+        "left_censored_t95_makes_lifetime_clock_ineligible;"
+        "candidate_requires_two_landmarks"
     )
     return result, pd.DataFrame(audit_rows)
 
@@ -1684,9 +1700,14 @@ def _standardized_lifetime_landmarks(
     raw_duration = np.full_like(values, np.nan)
     observed = np.zeros_like(values, dtype=bool)
     batch_median_duration = np.full(len(labels), np.nan, dtype=float)
+    lifetime_eligible = batch["lifetime_analysis_eligible"].to_numpy(dtype=bool)
     for column_index, label in enumerate(labels):
         observed[:, column_index] = (
-            batch[f"{label}_censoring"].astype(str).eq("observed").to_numpy(dtype=bool)
+            lifetime_eligible
+            & batch[f"{label}_censoring"]
+            .astype(str)
+            .eq("observed")
+            .to_numpy(dtype=bool)
             & np.isfinite(batch[label].to_numpy(dtype=float))
         )
         if np.sum(observed[:, column_index]) < 3:
